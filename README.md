@@ -2,6 +2,8 @@
 
 AutoGrant helps founders find funding opportunities, assess their fit, and prepare application drafts. The product combines a Next.js web app with a FastAPI service for grant discovery, scoring, drafting, and application-run tracking.
 
+**Live deployment:** [autogrant-sigma.vercel.app](https://autogrant-sigma.vercel.app) (currently restricted by Vercel team authentication).
+
 AutoGrant is an early-stage prototype. Grant listings and eligibility must be confirmed with each provider. Founders review every draft and remain responsible for submitting applications. A completed automation run is not proof of receipt. No verified founder reviews have been published yet.
 
 ## Product routes
