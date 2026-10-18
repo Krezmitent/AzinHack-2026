@@ -1,0 +1,1 @@
+"""AutoGrant AI FastAPI service."""
