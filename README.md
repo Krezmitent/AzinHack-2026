@@ -25,6 +25,36 @@ Grant actions require a signed-in account with a verified email address. The das
 
 In development, `PYTHON_SERVICE_URL` defaults to `http://localhost:8000`. In production, set it to the private FastAPI service address. Add the site domain to Firebase Authentication's authorized domains. Keep provider keys and service credentials server-side.
 
+## Docker
+
+The frontend and API have separate production images. For a local container run, create `.env.local` and `python-service/.env` as described above, then run:
+
+```sh
+docker compose --env-file .env.local up --build
+```
+
+Open `http://localhost:3000`. Compose keeps the API on the private container network; the frontend reaches it at `http://api:8000`. The API health check gates frontend startup. Stop the stack with `docker compose down`.
+
+For a server, build and publish the images through GitHub Actions, then use `docker-compose.production.yml`. Set `WEB_IMAGE` and `API_IMAGE` to the desired GHCR tags. Provide `.env.production` and `python-service/.env` on the host with the production environment values and secrets; do not commit either file. `WEB_PORT` controls the host port and defaults to `3000`. Put a TLS reverse proxy and domain in front of the web container, and keep the API port private.
+
+## CI and image delivery
+
+`.github/workflows/ci.yml` runs frontend lint/build and Python service tests for pull requests and pushes to `main`. After both checks pass on `main` or a `v*.*.*` tag, the workflow publishes frontend and API images to GitHub Container Registry (GHCR), tagged with the branch or release, commit SHA, and `latest` on the default branch.
+
+Before the first release, add these non-secret values under **GitHub repository Settings → Secrets and variables → Actions → Variables**. They are embedded in the frontend bundle at build time:
+
+- `NEXT_PUBLIC_FIREBASE_API_KEY`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+- `NEXT_PUBLIC_FIREBASE_APP_ID`
+- `NEXT_PUBLIC_SITE_URL`
+
+Firebase web configuration is intended to be public; Firebase authorization and Firestore rules protect user data. Keep `FIREBASE_SERVICE_ACCOUNT_JSON`, `TINYFISH_API_KEY`, and `GEMINI_API_KEY` in runtime secret storage on the deployment host. GHCR packages inherit repository visibility; configure package access before pulling private images from a server.
+
+The workflow publishes versioned, ready-to-run images. Automatic deployment to a live host requires that host's provider and deployment credentials; those are not configured in this repository.
+
 ## Request and submission flow
 
 - Each grant API request carries a Firebase ID token. Both the Next.js proxy and FastAPI verify the token and require a verified email. Execution and run-status requests also check token revocation. Firestore access is scoped to the authenticated user's profile.

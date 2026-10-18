@@ -1,0 +1,14 @@
+.git
+.github
+node_modules
+.next
+out
+coverage
+.env
+.env.*
+!.env.example
+python-service/.venv
+python-service/__pycache__
+**/__pycache__
+**/*.py[cod]
+brag-output-*
