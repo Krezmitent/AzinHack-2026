@@ -6,6 +6,26 @@ AutoGrant helps founders find funding opportunities, assess their fit, and prepa
 
 AutoGrant is an early-stage prototype. Grant listings and eligibility must be confirmed with each provider. Founders review every draft and remain responsible for submitting applications. A completed automation run is not proof of receipt. No verified founder reviews have been published yet.
 
+![AutoGrant landing page](output/screenshots/autogrant-home.png)
+
+## What the prototype demonstrates
+
+AutoGrant turns a founder profile into a source-linked grant shortlist and editable application drafts. TinyFish Search finds current public pages for a sector and location; TinyFish Fetch retrieves those pages so the service can extract eligibility notes and application links. Gemini scores opportunities against the profile and drafts answers from the founder's supplied information. Every match links to its source, and every draft stays editable before any run can start.
+
+The TinyFish integration is used in two distinct parts of the product:
+
+- **Discovery:** Search returns up to eight public result URLs. Fetch retrieves their HTML, from which AutoGrant extracts page titles, eligibility language, and application links. Results are cached for 10 minutes per location and sector in each service process.
+- **Application runs:** After the founder reviews the draft and explicitly starts a run, AutoGrant sends a single asynchronous TinyFish request. Vault access is disabled; the agent is instructed to stop at account or legal-attestation steps. AutoGrant reports “submitted” only with provider confirmation evidence. Ambiguous outcomes stay “unknown.”
+
+This prototype does not claim verified grant coverage, eligibility decisions, application outcomes, or user traction. The sample grant cards and details in the walkthrough video are illustrative.
+
+## Project resources
+
+- [Launch video](brag-output-2026-10-18-174914/brag.mp4) · [WebM](brag-output-2026-10-18-174914/brag.webm) · [video preview](brag-output-2026-10-18-174914/brag.jpg)
+- [CI workflow](.github/workflows/ci.yml) · [API service](python-service/app/main.py) · [TinyFish integration](python-service/app/services/tinyfish.py)
+
+![AutoGrant grant board](output/screenshots/autogrant-features.png)
+
 ## Product routes
 
 - `/` — product overview and customer review section.
