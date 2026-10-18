@@ -1,5 +1,6 @@
 export type StartupProfile = {
   sector: string;
+  location: string;
   revenue: string;
   demographics: string;
   pitchDeckText: string;
