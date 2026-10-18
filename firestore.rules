@@ -2,7 +2,25 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      function isOwner() {
+        return request.auth != null && request.auth.uid == userId && request.auth.token.email_verified == true;
+      }
+
+      function validProfile() {
+        let data = request.resource.data;
+        return data.keys().hasAll(['sector', 'location', 'revenue', 'demographics', 'pitchDeckText', 'updatedAt'])
+          && data.keys().hasOnly(['sector', 'location', 'revenue', 'demographics', 'pitchDeckText', 'updatedAt'])
+          && data.sector is string && data.sector.size() > 0 && data.sector.size() <= 120
+          && data.location is string && data.location.size() > 0 && data.location.size() <= 120
+          && data.revenue is string && data.revenue.size() > 0 && data.revenue.size() <= 120
+          && data.demographics is string && data.demographics.size() <= 2000
+          && data.pitchDeckText is string && data.pitchDeckText.size() >= 20 && data.pitchDeckText.size() <= 100000
+          && data.updatedAt is string && data.updatedAt.size() <= 40;
+      }
+
+      allow read: if isOwner();
+      allow create, update: if isOwner() && validProfile();
+      allow delete: if isOwner();
     }
     match /grants/{grantId} {
       // Grants are discovered public data; only trusted backend service accounts create them.

@@ -1,0 +1,476 @@
+{
+  "version": 1,
+  "historyId": "4c0b167a-9bbf-4385-9696-578db4fb2d45",
+  "currentRevision": "411dbb2d-a797-40a1-9211-61af8006f9a9",
+  "pendingChanges": false,
+  "files": {
+    "AGENTS.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/1d/1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "CLAUDE.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/1d/1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "animation.js": {
+      "hash": "7e37dda557d6f1d2dbc9d295bc9f8b1443f77421f88967ca81b4a8b16f5b4358",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/7e/7e37dda557d6f1d2dbc9d295bc9f8b1443f77421f88967ca81b4a8b16f5b4358"
+    },
+    "assets/fonts/manrope.woff2": {
+      "hash": "f7ac6258da20ab7541939b59851155753d1d24f1b30cbcb949077a3faa3d1593",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/f7/f7ac6258da20ab7541939b59851155753d1d24f1b30cbcb949077a3faa3d1593"
+    },
+    "assets/fonts/syne.woff2": {
+      "hash": "0aad69416fc0ccf6f340647c46e759d5c6e4628d92576b279ec5ada0afbd9d35",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/0a/0aad69416fc0ccf6f340647c46e759d5c6e4628d92576b279ec5ada0afbd9d35"
+    },
+    "assets/music/cues/happy-beats-business-moves-vol-10-by-ende-dot-app.music-cues.json": {
+      "hash": "f9e3e7fd0cb0bd426d58d93e0341b86a7e00f9bdace83710f90b3f123214ba18",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/f9/f9e3e7fd0cb0bd426d58d93e0341b86a7e00f9bdace83710f90b3f123214ba18"
+    },
+    "assets/music/cues/happy-beats-business-moves-vol-10-by-ende-dot-app.music-cues.md": {
+      "hash": "b14050eba9abd2ee98fc4af9aefadc32c4f503b809c597e09f1c5d70ad9783f2",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/b1/b14050eba9abd2ee98fc4af9aefadc32c4f503b809c597e09f1c5d70ad9783f2"
+    },
+    "assets/sfx/impact/impactSoft_medium_002.ogg": {
+      "hash": "5069e3571a77d7f7aae9ef71d0364aa245fb7d64a7c8cc9956f221d03088c089",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/50/5069e3571a77d7f7aae9ef71d0364aa245fb7d64a7c8cc9956f221d03088c089"
+    },
+    "assets/sfx/interface/click_002.ogg": {
+      "hash": "adcd1f4adc35f1b41bc1b5bbefeff7aa44f2f3f0d96d3199b544140c7c1e761c",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/ad/adcd1f4adc35f1b41bc1b5bbefeff7aa44f2f3f0d96d3199b544140c7c1e761c"
+    },
+    "assets/sfx/interface/drop_001.ogg": {
+      "hash": "692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/69/692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af"
+    },
+    "assets/sfx/interface/drop_002.ogg": {
+      "hash": "4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/4a/4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218"
+    },
+    "audio-envelope.js": {
+      "hash": "35ae33988dd5c651a9cc4560ce0baa508bb2b5cc6f479ab53d2687958eb7ebdf",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/35/35ae33988dd5c651a9cc4560ce0baa508bb2b5cc6f479ab53d2687958eb7ebdf"
+    },
+    "hyperframes.json": {
+      "hash": "53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/53/53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
+    },
+    "index.html": {
+      "hash": "3fb7aac243250e1934a7b78e7b0bbfaf544b197436a7519f27a09a75a0e47760",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/3f/3fb7aac243250e1934a7b78e7b0bbfaf544b197436a7519f27a09a75a0e47760"
+    },
+    "meta.json": {
+      "hash": "a9fb4710327cfa6abdc1b6b35c4869faee51727ff4ba77b1bd1e0b504d62bab6",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/a9/a9fb4710327cfa6abdc1b6b35c4869faee51727ff4ba77b1bd1e0b504d62bab6"
+    },
+    "package.json": {
+      "hash": "c80493ef103628c803d55195fd0c2360ecb13e897b6efb951361bd79426204b1",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/c8/c80493ef103628c803d55195fd0c2360ecb13e897b6efb951361bd79426204b1"
+    },
+    "styles.css": {
+      "hash": "7902f44f02a1c2cbf145bb647893abdf1e56e2b936cebf57629fa5f522be3d9c",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/79/7902f44f02a1c2cbf145bb647893abdf1e56e2b936cebf57629fa5f522be3d9c"
+    },
+    "assets/music/happy-beats-business-moves-vol-10-by-ende-dot-app.mp3": {
+      "hash": "f9912f2c962ada1e579f5ccc5a7d854d67e5e81ee96a7dd8c885a8480ae58d09",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/f9/f9912f2c962ada1e579f5ccc5a7d854d67e5e81ee96a7dd8c885a8480ae58d09"
+    },
+    "assets/fonts/manrope-400.woff2": {
+      "hash": "849290ef12a2eeb9af5c11924120d11aa4ae8b435ed3347d7fc8bc240c293ca3",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/84/849290ef12a2eeb9af5c11924120d11aa4ae8b435ed3347d7fc8bc240c293ca3"
+    },
+    "assets/fonts/manrope-600.woff2": {
+      "hash": "f7ac6258da20ab7541939b59851155753d1d24f1b30cbcb949077a3faa3d1593",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/f7/f7ac6258da20ab7541939b59851155753d1d24f1b30cbcb949077a3faa3d1593"
+    },
+    "assets/fonts/manrope-700.woff2": {
+      "hash": "d2a12c85a831e4b5db341767d0347fa3d1361d22a1fcb3e361a16b6c90080f71",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/d2/d2a12c85a831e4b5db341767d0347fa3d1361d22a1fcb3e361a16b6c90080f71"
+    },
+    "assets/fonts/manrope-800.woff2": {
+      "hash": "74c161dbcbce7c3590803cc72dc1f63313c360e13367aba5075a7b7b3818ea49",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/74/74c161dbcbce7c3590803cc72dc1f63313c360e13367aba5075a7b7b3818ea49"
+    },
+    "assets/sfx/interface/click_001.ogg": {
+      "hash": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9",
+      "content": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/cc/ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9"
+    }
+  },
+  "revisions": {
+    "9f9bba63-d2da-4444-9072-6fe583e685e1": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792326455231,
+      "endedAt": 1792326455232,
+      "files": {
+        "index.html": {
+          "before": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/cc/cc78baa39fba02e1a9b77f5af24ac4f7721b2aebb1f10f77ca5d7dbdd905fecb",
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/e6/e655e0af15da4c86c419af3f09b84594cf22804a7d28ceab7bd37182e7f4e551"
+        }
+      }
+    },
+    "e7adb28c-5fdf-472c-92fb-1633dfacb5a4": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792326510983,
+      "endedAt": 1792326511000,
+      "files": {
+        "assets/fonts/manrope-400.woff2": {
+          "before": null,
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/84/849290ef12a2eeb9af5c11924120d11aa4ae8b435ed3347d7fc8bc240c293ca3"
+        },
+        "assets/fonts/manrope-600.woff2": {
+          "before": null,
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/f7/f7ac6258da20ab7541939b59851155753d1d24f1b30cbcb949077a3faa3d1593"
+        },
+        "assets/fonts/manrope-700.woff2": {
+          "before": null,
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/d2/d2a12c85a831e4b5db341767d0347fa3d1361d22a1fcb3e361a16b6c90080f71"
+        },
+        "assets/fonts/manrope-800.woff2": {
+          "before": null,
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/74/74c161dbcbce7c3590803cc72dc1f63313c360e13367aba5075a7b7b3818ea49"
+        },
+        "assets/sfx/interface/click_001.ogg": {
+          "before": null,
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/cc/ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9"
+        },
+        "index.html": {
+          "before": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/e6/e655e0af15da4c86c419af3f09b84594cf22804a7d28ceab7bd37182e7f4e551",
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/e7/e75b76769d88e4cf450b7e316db1d2c337a1fc6c51e8248ff7e6335c28806454"
+        },
+        "styles.css": {
+          "before": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/76/761f1012113fb2eeb00ba9f300d04afca9f872eba0c6f5ae87ca0f3e7d7c2ae9",
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/95/95340bc53824d0020f54c35bbbb39e96c548e9038bd5ec08bfd32b138ce3634e"
+        }
+      }
+    },
+    "95f0ff09-6888-4d9c-b9ff-8057bd041f49": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792326553831,
+      "endedAt": 1792326553841,
+      "files": {
+        "index.html": {
+          "before": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/e7/e75b76769d88e4cf450b7e316db1d2c337a1fc6c51e8248ff7e6335c28806454",
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/ad/adc222f03e3a6952608a05afc8f0aac1d1f8b45a3ae5a238f9039e105fd2393f"
+        },
+        "styles.css": {
+          "before": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/95/95340bc53824d0020f54c35bbbb39e96c548e9038bd5ec08bfd32b138ce3634e",
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/79/7902f44f02a1c2cbf145bb647893abdf1e56e2b936cebf57629fa5f522be3d9c"
+        }
+      }
+    },
+    "411dbb2d-a797-40a1-9211-61af8006f9a9": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792326735925,
+      "endedAt": 1792326735935,
+      "files": {
+        "animation.js": {
+          "before": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/be/be5ebde9125d3e8e6d12b4acd4bc606ba950e2f0b9e4f70874502a1e47d83da8",
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/7e/7e37dda557d6f1d2dbc9d295bc9f8b1443f77421f88967ca81b4a8b16f5b4358"
+        },
+        "index.html": {
+          "before": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/ad/adc222f03e3a6952608a05afc8f0aac1d1f8b45a3ae5a238f9039e105fd2393f",
+          "after": "/home/arachknight/.cache/hyperframes/history/4c0b167a-9bbf-4385-9696-578db4fb2d45/blobs/3f/3fb7aac243250e1934a7b78e7b0bbfaf544b197436a7519f27a09a75a0e47760"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "411dbb2d-a797-40a1-9211-61af8006f9a9",
+      "id": "805631bb-27b3-493e-9075-461e9451a361"
+    },
+    "revisions": {
+      "9f9bba63-d2da-4444-9072-6fe583e685e1": [
+        {
+          "id": "4c81d06a-c23b-4bf6-9a3e-5e52b6e44089",
+          "scope": "project",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792326464270,
+          "contentHash": "2b0b0705f83a00c7931f8b84e4b92db919e98fbaac2f27f1863087ff1fd28723",
+          "revision": "9f9bba63-d2da-4444-9072-6fe583e685e1",
+          "inputFingerprint": "046d820638c2f96fca75c623933405257cda84d6db8811c1686f7a62eccbe1b4",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "38c122de-29ee-4dde-b3a7-cc2a7579e9dd"
+        }
+      ],
+      "e7adb28c-5fdf-472c-92fb-1633dfacb5a4": [
+        {
+          "id": "81d1d44f-1524-40de-b034-5a7bb3df071c",
+          "scope": "project",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792326519069,
+          "contentHash": "af63300af0861d6c85422d701344c536525de5a07fac39cc63a910a5f9f19dcd",
+          "revision": "e7adb28c-5fdf-472c-92fb-1633dfacb5a4",
+          "inputFingerprint": "859f0bd6b5cc45a250ff2cfdde69e3bc2385315032d2819b458f6a965cf98bd9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "38c122de-29ee-4dde-b3a7-cc2a7579e9dd"
+        }
+      ],
+      "95f0ff09-6888-4d9c-b9ff-8057bd041f49": [
+        {
+          "id": "0c7deb68-2bf2-4ec6-8246-847e4a65b044",
+          "scope": "project",
+          "report": "/home/arachknight/Documents/Projects/Hackathon/AzinHack-2026/brag-output-2026-10-18-174914/composition/.hyperframes/artifacts/checks/0c7deb68-2bf2-4ec6-8246-847e4a65b044.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792326561469,
+          "contentHash": "9b482f5b53ea0bf34308e23d896d74166d04777d6f9f1027bb782e2589daeb6f",
+          "revision": "95f0ff09-6888-4d9c-b9ff-8057bd041f49",
+          "inputFingerprint": "f9916178c756065c2516659f6aa01d706b1a88fc41fcf32d178e0776494f5716",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "411dbb2d-a797-40a1-9211-61af8006f9a9": [
+        {
+          "id": "805631bb-27b3-493e-9075-461e9451a361",
+          "scope": "project",
+          "report": "/home/arachknight/Documents/Projects/Hackathon/AzinHack-2026/brag-output-2026-10-18-174914/composition/.hyperframes/artifacts/checks/805631bb-27b3-493e-9075-461e9451a361.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792326743635,
+          "contentHash": "9b482f5b53ea0bf34308e23d896d74166d04777d6f9f1027bb782e2589daeb6f",
+          "revision": "411dbb2d-a797-40a1-9211-61af8006f9a9",
+          "inputFingerprint": "ebada6872689345a5bd0244e0a1f7f36993e58e1dc23d72baef769ac76813b2d",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "1935140c-a99a-4d28-88a6-e9f69870953c",
+        "scope": "project",
+        "report": "/home/arachknight/Documents/Projects/Hackathon/AzinHack-2026/brag-output-2026-10-18-174914/composition/.hyperframes/artifacts/checks/1935140c-a99a-4d28-88a6-e9f69870953c.json",
+        "metadata": {
+          "ok": false,
+          "browserSkipped": true,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 3000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1792326446974,
+        "contentHash": "a925312b70aa35fcb9d152a2f1c6bd34d44259025dc6842c0da8c9f5e2430c76",
+        "revision": null,
+        "inputFingerprint": "17b594e9a7abb3d0989fa4527773a84edb49f201703ea6de53bc0a38b4c3398e",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {
+      "e7adb28c-5fdf-472c-92fb-1633dfacb5a4": [
+        {
+          "scope": "full",
+          "id": "ceb2b794-3e00-47d3-8628-02788e8f7fac-0",
+          "time": 1.1,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792326537124,
+          "contentHash": "b827d08e0ac9f32c7d125e027188ce9cd9370b8bccedcf15ba6032cd0d648515",
+          "revision": "e7adb28c-5fdf-472c-92fb-1633dfacb5a4",
+          "inputFingerprint": "859f0bd6b5cc45a250ff2cfdde69e3bc2385315032d2819b458f6a965cf98bd9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "38c122de-29ee-4dde-b3a7-cc2a7579e9dd"
+        },
+        {
+          "scope": "full",
+          "id": "ceb2b794-3e00-47d3-8628-02788e8f7fac-1",
+          "time": 5.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792326537124,
+          "contentHash": "7b809ca6eb7996cd4910da94d7f243276d3201a0dbdd7e4b83946d3bee68a60e",
+          "revision": "e7adb28c-5fdf-472c-92fb-1633dfacb5a4",
+          "inputFingerprint": "859f0bd6b5cc45a250ff2cfdde69e3bc2385315032d2819b458f6a965cf98bd9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "38c122de-29ee-4dde-b3a7-cc2a7579e9dd"
+        },
+        {
+          "scope": "full",
+          "id": "ceb2b794-3e00-47d3-8628-02788e8f7fac-2",
+          "time": 10,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792326537124,
+          "contentHash": "c3b200d6dee21b9bb54f7cd2734223231e031009ac3aedbdbf0d2112527ab852",
+          "revision": "e7adb28c-5fdf-472c-92fb-1633dfacb5a4",
+          "inputFingerprint": "859f0bd6b5cc45a250ff2cfdde69e3bc2385315032d2819b458f6a965cf98bd9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "38c122de-29ee-4dde-b3a7-cc2a7579e9dd"
+        },
+        {
+          "scope": "full",
+          "id": "ceb2b794-3e00-47d3-8628-02788e8f7fac-3",
+          "time": 14.4,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792326537124,
+          "contentHash": "02452c3ac9db9afa76f3edcbe23b7922e8330400956fef5ba531a6a63ea40ef1",
+          "revision": "e7adb28c-5fdf-472c-92fb-1633dfacb5a4",
+          "inputFingerprint": "859f0bd6b5cc45a250ff2cfdde69e3bc2385315032d2819b458f6a965cf98bd9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "38c122de-29ee-4dde-b3a7-cc2a7579e9dd"
+        },
+        {
+          "scope": "full",
+          "id": "ceb2b794-3e00-47d3-8628-02788e8f7fac-4",
+          "time": 18.9,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792326537124,
+          "contentHash": "10c9e4ad4dc84e49128375427a19eaa13b2a093e9ddf3e04a8911981460de1b2",
+          "revision": "e7adb28c-5fdf-472c-92fb-1633dfacb5a4",
+          "inputFingerprint": "859f0bd6b5cc45a250ff2cfdde69e3bc2385315032d2819b458f6a965cf98bd9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "38c122de-29ee-4dde-b3a7-cc2a7579e9dd"
+        }
+      ]
+    },
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "71792325-3199-4aab-a0af-607b1f45eff3",
+      "completedAt": 1792326803941,
+      "output": "/home/arachknight/Documents/Projects/Hackathon/AzinHack-2026/brag-output-2026-10-18-174914/brag.webm",
+      "status": "completed",
+      "revision": "411dbb2d-a797-40a1-9211-61af8006f9a9"
+    },
+    "retainedRevisions": [
+      "411dbb2d-a797-40a1-9211-61af8006f9a9",
+      "95f0ff09-6888-4d9c-b9ff-8057bd041f49"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}
