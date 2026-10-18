@@ -6,3 +6,5 @@ python-service/.venv/
 python-service/__pycache__/
 python-service/app/**/__pycache__/
 *.pyc
+.vercel
+.env*
