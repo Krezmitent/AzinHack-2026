@@ -1,25 +1,25 @@
+import BrandLogo from "@/components/BrandLogo";
 import Link from "next/link";
 
 export default function SiteFooter() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer site-footer-v2">
       <div className="page-wrap site-footer-inner">
-        <div>
+        <div className="site-footer-intro">
           <Link className="brand footer-brand" href="/" aria-label="AutoGrant home">
-            <span className="brand-mark" aria-hidden="true"><span /><span /><span /><span /></span>
-            <span>AutoGrant<span className="brand-period">.</span></span>
+            <BrandLogo />
           </Link>
-          <p>Find your fit. Make your case.</p>
+          <p>Find the opportunities worth a closer look.</p>
         </div>
         <nav aria-label="Footer navigation">
           <Link href="/#how-it-works">How it works</Link>
-          <Link href="/#reviews">Reviews</Link>
+          <Link href="/#why-autogrant">The approach</Link>
           <Link href="/dashboard">Grant board</Link>
           <Link href="/login">Log in</Link>
-          <Link href="/signup">Sign up</Link>
+          <Link href="/signup">Create account</Link>
         </nav>
       </div>
-      <div className="page-wrap site-footer-bottom"><span>© {new Date().getFullYear()} AutoGrant</span><span>Made for founders finding their next step.</span></div>
+      <div className="page-wrap site-footer-bottom"><span>© {new Date().getFullYear()} AutoGrant</span><span>You review every draft before an application run.</span></div>
     </footer>
   );
 }

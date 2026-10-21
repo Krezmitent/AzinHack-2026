@@ -29,7 +29,7 @@ This prototype does not claim verified grant coverage, eligibility decisions, ap
 
 ## Product routes
 
-The funding workspace now saves the latest 50 opportunities and drafts to owner-scoped Firestore collections. Draft saves use revision checks and retain prior revisions; a stale browser tab cannot overwrite a newer draft. Source or profile changes require another review. Eligibility is shown as met, unmet, or unknown alongside a separate strategic-fit score (not a funding probability). Company eligibility facts can be supplied in the profile. Redeploy `firestore.rules` to enable the optional `companyFacts` field.
+The funding workspace now saves the latest 50 opportunities and drafts to owner-scoped Firestore collections. Draft saves use revision checks and retain prior revisions; a stale browser tab cannot overwrite a newer draft. Source or profile changes require another review. Eligibility is shown as met, unmet, or unknown alongside a separate strategic-fit score (not a funding probability). Company eligibility facts can be supplied in the profile.
 
 Implementation sequence and operational boundaries: [continuous funding workflow](docs/implementation-plan.md).
 
@@ -45,8 +45,8 @@ Grant actions require a signed-in account with a verified email address. The das
 
 1. Install Node.js and Python 3.12. From the repository root, run `npm ci`.
 2. Copy `.env.example` to `.env.local`. Add the browser configuration from Firebase project settings and the service account JSON used for server-side ID-token verification. Set `NEXT_PUBLIC_SITE_URL` to the site origin; use `http://localhost:3000` for local development. Keep service credentials out of `NEXT_PUBLIC_` variables and out of source control.
-3. In Firebase, enable Email/Password authentication, enable email verification, create a Firestore database, and deploy `firestore.rules` before saving profiles. The rules limit profile access to its owner and validate profile data.
-4. Copy `python-service/.env.example` to `python-service/.env`. Add the same Firebase service account JSON, a TinyFish API key, and a Gemini API key. The default model is `gemini-2.5-flash`; set `ALLOWED_ORIGINS` to the frontend origin. To use scheduled funding watches, set `PUBLIC_WEBHOOK_BASE_URL` to the public HTTPS frontend origin and run the separate worker. Keep this file out of source control.
+3. In Firebase, enable Email/Password authentication, enable email verification, and create a Firestore database. Profile reads and writes go through the authenticated API and use the Firebase Admin service account, so browser Firestore rules do not block profile saves. Keep `firestore.rules` deployed as defense in depth for any direct client access.
+4. Copy `python-service/.env.example` to `python-service/.env`. Add the same Firebase service account JSON, a TinyFish API key, and a Gemini API key. The default model is `gemini-3.8-flash`; set `ALLOWED_ORIGINS` to the frontend origin. To use scheduled funding watches, set `PUBLIC_WEBHOOK_BASE_URL` to the public HTTPS frontend origin and run the separate worker. Keep this file out of source control.
 5. Install Python dependencies with `python3.12 -m venv python-service/.venv` and `python-service/.venv/bin/pip install -r python-service/requirements.txt`.
 6. Start FastAPI with `cd python-service && .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000`. In a second terminal, run `npm run dev`. Open `http://localhost:3000`. The service's `/health` endpoint checks process health; `/ready` reports whether required integrations are configured without exposing credentials.
 
@@ -116,4 +116,4 @@ Build the frontend with `npm run build`. Run the service tests with `cd python-s
 
 ## Data and deployment notes
 
-Profiles are stored in `users/{firebaseUid}` in Firestore. Grant provenance and application runs are stored in server-managed subcollections. Profile text is sent to the scoring and drafting services. Restrict network access to the Python service and store service credentials and provider keys in the deployment secret manager.
+Profiles are stored in `users/{firebaseUid}` in Firestore through authenticated, owner-scoped API routes. Grant provenance and application runs are stored in server-managed subcollections. Profile text is sent to the scoring and drafting services. Restrict network access to the Python service and store service credentials and provider keys in the deployment secret manager.

@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function SignupPage() {
-  return <div className="auth-page"><SiteHeader /><main className="auth-main page-wrap"><div className="auth-side"><span className="auth-side-mark">✳</span><h1>Make room for the right grant.</h1><p>Start with your story. We’ll help turn it into a sharper search and a stronger first draft.</p><div className="auth-side-bottom">Built around your startup.</div></div><AuthForm mode="signup" /></main><SiteFooter /></div>;
+  return <div className="auth-page auth-page-v2"><SiteHeader /><main className="auth-main auth-main-v2 page-wrap"><div className="auth-side auth-side-v2"><div className="auth-side-signal" aria-hidden="true"><span /><span /><span /><i /></div><div className="auth-side-content"><h1>Start with what you’re building.</h1><p>See funding opportunities with their sources and fit in view, then shape your first draft.</p></div><div className="auth-side-bottom">Your story gives the search its direction.</div></div><AuthForm mode="signup" /></main><SiteFooter /></div>;
 }

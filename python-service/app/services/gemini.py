@@ -47,6 +47,13 @@ async def _generate(prompt: str) -> str:
             if response.status_code in (401, 403):
                 raise UpstreamServiceError("Gemini rejected the configured API key.", 503)
             if response.status_code >= 400:
+                try:
+                    provider_message = response.json().get("error", {}).get("message", "")
+                except (ValueError, AttributeError):
+                    provider_message = ""
+                if response.status_code == 404:
+                    detail = provider_message[:400] or "The configured model was not found or is unavailable to this API key."
+                    raise UpstreamServiceError(f"Gemini could not use the configured model: {detail}")
                 raise UpstreamServiceError(f"Gemini rejected the request (HTTP {response.status_code}).")
 
             try:

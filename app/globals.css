@@ -2,18 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { --paper: #f7f8fc; --ink: #1e2443; --blue: #4945e6; --lilac: #e9e7ff; --mint: #c9f2dd; --line: #dfe2ef; }
+:root {
+  color-scheme: light;
+  --paper: #f3f8fc;
+  --ink: #13263d;
+  --blue: #3f5bff;
+  --lilac: #dceaf4;
+  --mint: #bce9d5;
+  --coral: #ff775c;
+  --line: #c9d8e4;
+  --muted: #5f7487;
+  --surface: #ffffff;
+}
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Manrope", sans-serif; }
-button, input, textarea { font: inherit; }
+body { margin: 0; min-width: 320px; background: var(--paper); color: var(--ink); font-family: "Manrope", sans-serif; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 a { color: inherit; }
 button:disabled { cursor: not-allowed; opacity: .55; }
-:focus-visible { outline: 3px solid #ff987e; outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
 ::selection { background: var(--mint); color: var(--ink); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.page-wrap { width: min(100% - 56px, 1380px); margin-inline: auto; }
+.page-wrap { width: min(calc(100% - 64px), 1440px); margin-inline: auto; }
 .app-shell { overflow: hidden; }
 
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 82px; }
@@ -343,3 +354,10 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .radar-event.is-read { opacity: .72; }
 .radar-event button, .radar-row > button { flex: none; border: 0; background: transparent; color: var(--blue); font-size: 11px; font-weight: 800; }
 @media (max-width: 760px) { .radar-columns { grid-template-columns: 1fr; } .radar-row { align-items: flex-start; flex-direction: column; } .radar-row .grant-actions { flex-wrap: wrap; } .funding-radar .matches-heading { display: grid; gap: 16px; } }
+
+/* One optical lockup across product and marketing surfaces. */
+.brand-lockup { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+.brand-symbol { display: block; width: 38px; height: 38px; flex: none; color: var(--blue); }
+.brand-wordmark { display: inline-flex; font-family: "Syne", sans-serif; font-size: 25px; font-weight: 700; letter-spacing: -.083em; line-height: 1; }
+.brand-wordmark span { font-weight: 700; }
+@media (max-width: 600px) { .brand-symbol { width: 34px; height: 34px; } .brand-wordmark { font-size: 22px; } }

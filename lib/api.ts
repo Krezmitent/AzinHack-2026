@@ -72,6 +72,8 @@ export const executeApplication = (grant: Grant, answers: Record<string, string>
     draft_revision: revision
   });
 export const listApplicationRuns = () => request<{ runs: ApplicationRun[] }>("/api/application-runs", undefined, "GET");
+export const loadStartupProfile = () => request<{ profile: StartupProfile | null }>("/api/profile", undefined, "GET");
+export const saveStartupProfile = (profile: StartupProfile) => request<{ profile: StartupProfile }>("/api/profile", profile);
 export const loadWorkspace = () => request<{ opportunities: Grant[]; drafts: SavedDraft[]; inspections: InspectionRun[] }>("/api/workspace", undefined, "GET");
 export const startInspection = (grant: Grant) => request<{ inspection: InspectionRun }>(`/api/workspace/inspections/${grant.id}`, { source_version: grant.source_version });
 export const getInspection = (id: string) => request<{ inspection: InspectionRun; grant: Grant }>(`/api/workspace/inspections/${id}`, undefined, "GET");

@@ -92,8 +92,8 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   }
 
   return (
-    <div className="auth-card">
-      <div className="auth-card-heading"><h2>{isSignup ? "Create your account" : "Welcome back"}</h2><p>{isSignup ? "Start a profile that helps you spot stronger grant opportunities. Verify your email before using grant tools." : "Pick up where you left off with your grant search."}</p></div>
+    <div className="auth-card auth-card-v2">
+      <div className="auth-card-heading"><h2>{isSignup ? "Create your account" : "Welcome back"}</h2><p>{isSignup ? "Create an account, verify your email, and start a funding shortlist shaped by your startup." : "Sign in to continue your shortlist and application drafts."}</p></div>
       <form className="auth-form" onSubmit={submit}>
         {isSignup && <div className="field"><label htmlFor="auth-name">Your name <span className="optional">Optional</span></label><input id="auth-name" autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} placeholder="How should we call you?" /></div>}
         <div className="field"><label htmlFor="auth-email">Email address</label><input id="auth-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@startup.com" /></div>

@@ -15,6 +15,7 @@ from app.services.workspace import load_opportunity, save_assessment
 from app.workspace_routes import router as workspace_router
 from app.inspection_routes import router as inspection_router
 from app.monitor_routes import router as monitor_router, webhooks as monitor_webhooks
+from app.profile_routes import router as profile_router
 from app.services.inspection import draft_questions
 from app.services.inspection_runs import reviewed_grant
 from app.services.tinyfish import (UpstreamServiceError, discover_and_parse_grants, get_web_agent_run,
@@ -25,6 +26,7 @@ app.include_router(workspace_router)
 app.include_router(inspection_router)
 app.include_router(monitor_router)
 app.include_router(monitor_webhooks)
+app.include_router(profile_router)
 app.add_middleware(CORSMiddleware, allow_origins=settings.allowed_origins.split(","), allow_methods=["*"], allow_headers=["*"])
 
 

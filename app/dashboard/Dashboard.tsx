@@ -2,15 +2,16 @@
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firebaseServices } from "@/lib/firebase";
-import { discoverGrants, draftApplication, executeApplication, getApplicationRun, listApplicationRuns, scoreGrant, loadWorkspace, saveDraft, startInspection, getInspection } from "@/lib/api";
+import { discoverGrants, draftApplication, executeApplication, getApplicationRun, listApplicationRuns, scoreGrant, loadWorkspace, saveDraft, startInspection, getInspection, loadStartupProfile, saveStartupProfile } from "@/lib/api";
 import type { ApplicationRun } from "@/lib/api";
 import type { Grant, InspectionRun, SavedDraft, StartupProfile } from "@/lib/types";
 import { draftIssues, formQuestions, submissionAnswers } from "@/lib/application";
 import FundingRadar from "@/components/FundingRadar";
+import "./dashboard-redesign.css";
 
 const initialProfile: StartupProfile = { sector: "", location: "", revenue: "", demographics: "", pitchDeckText: "", companyFacts: "" };
 const MAX_PITCH_LENGTH = 100_000;
@@ -42,7 +43,7 @@ export default function Dashboard() {
   useEffect(() => {
     let active = true;
     try {
-      const { auth, db } = firebaseServices();
+      const { auth } = firebaseServices();
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (!active) return;
         if (!user) {
@@ -72,14 +73,14 @@ export default function Dashboard() {
           if (active && auth.currentUser?.uid === user.uid) setNotice({ message: "Could not load recent application runs. Check the grant portal before starting another run.", tone: "error" });
         });
         try {
-          const [saved, workspace] = await Promise.all([getDoc(doc(db, "users", user.uid)), loadWorkspace()]);
+          const [{ profile: saved }, workspace] = await Promise.all([loadStartupProfile(), loadWorkspace()]);
           if (active && auth.currentUser?.uid === user.uid) {
             setGrants(workspace.opportunities);
             setSavedDrafts(workspace.drafts);
             setInspections(workspace.inspections);
           }
-          if (active && auth.currentUser?.uid === user.uid && saved.exists()) {
-            const data = saved.data();
+          if (active && auth.currentUser?.uid === user.uid && saved) {
+            const data = saved as StartupProfile;
             setProfile({
               sector: typeof data.sector === "string" ? data.sector : "",
               location: typeof data.location === "string" ? data.location : "",
@@ -175,12 +176,10 @@ export default function Dashboard() {
     }
     setBusy("save");
     try {
-      const { db } = firebaseServices();
-      await setDoc(doc(db, "users", uid), {
+      await saveStartupProfile({
         sector: profile.sector.trim(), location: profile.location.trim(), revenue: profile.revenue.trim(),
         demographics: profile.demographics.trim(), pitchDeckText: profile.pitchDeckText.trim(), companyFacts: (profile.companyFacts || "").trim(),
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+      });
       setNotice({ message: "Profile saved. You’re ready to scan for grants.", tone: "success" });
     } catch (error) {
       setNotice({ message: error instanceof Error ? error.message : "Could not save your profile.", tone: "error" });
@@ -363,14 +362,14 @@ export default function Dashboard() {
   return (
     <div className="app-shell" id="top">
       <header className="topbar page-wrap">
-        <Link className="brand" href="/" aria-label="AutoGrant home"><span className="brand-mark" aria-hidden="true"><span /><span /><span /><span /></span><span>AutoGrant<span className="brand-period">.</span></span></Link>
-        <nav className="top-nav" aria-label="Dashboard navigation"><Link href="/">Home</Link><a href="#profile">Your profile</a><a href="#matches">Grant board</a></nav>
+        <Link className="brand" href="/" aria-label="AutoGrant home"><BrandLogo /></Link>
+        <nav className="top-nav" aria-label="Dashboard navigation"><Link href="/">Home</Link><a href="#profile">Profile</a><a href="#matches">Opportunities</a><a href="#funding-radar">Funding radar</a></nav>
         <div className="topbar-actions"><span className={`connection-status ${uid && authReady ? "is-connected" : ""}`}><span />{!authReady ? "Loading profile" : uid ? "Profile connected" : "Sign in needed"}</span>{uid ? <button type="button" className="topbar-logout" onClick={logOut} disabled={Boolean(busy)}>Log out</button> : <Link className="topbar-logout" href="/login">Log in</Link>}</div>
       </header>
 
       <main>
         <div className="page-wrap workspace">
-          <div className="workspace-heading"><div><h1>Your funding desk</h1><p>One place to shape your story and see what fits.</p></div><span className="workspace-note">A better shortlist starts with your story.</span></div>
+          <div className="workspace-heading"><div><h1>Your funding desk<span aria-hidden="true">.</span></h1><p>Keep your startup, opportunities, and application progress in one place.</p></div><span className="workspace-note">Find the fit. Follow the signal.</span></div>
           <div className={`notice notice-${notice.tone}`} role="status" aria-live="polite"><span className="notice-icon" aria-hidden="true">{notice.tone === "success" ? "✓" : notice.tone === "error" ? "!" : "✳"}</span><span>{notice.message}</span></div>
           <div className="workspace-grid">
             <section className="profile-panel" id="profile" aria-labelledby="profile-heading">
@@ -384,7 +383,7 @@ export default function Dashboard() {
                 <div className="field"><label htmlFor="pitch">Tell us what you’re building</label><textarea id="pitch" required minLength={20} maxLength={MAX_PITCH_LENGTH} rows={7} disabled={profileDisabled} value={profile.pitchDeckText} onChange={(event) => update("pitchDeckText", event.target.value)} placeholder="Paste your plain-text pitch deck or write a short overview of your startup." /><span className="field-help">At least 20 characters. A few clear paragraphs work best.</span></div>
                 <input id="pitch-file" className="visually-hidden file-input" type="file" accept=".txt,text/plain" disabled={profileDisabled} onChange={uploadPitchDeck} /><label className="upload-control" htmlFor="pitch-file"><span aria-hidden="true">＋</span> Upload a .txt pitch deck</label>
                 <button className="save-button" type="submit" disabled={profileDisabled}>{busy === "save" ? "Saving profile…" : "Save profile"}<span aria-hidden="true">↗</span></button>
-                <p className="form-footnote">Saving stores your profile in Firestore. Scanning and drafting send relevant profile and grant details to our AI services.</p>
+                <p className="form-footnote">Your profile is saved to your account. Scanning and drafting send relevant profile and grant details to our AI services.</p>
               </form>
             </section>
 
@@ -400,7 +399,7 @@ export default function Dashboard() {
                 const inspectionRun = inspections.find((item) => item.id === grant.id);
                 const inspecting = inspectionRun && ["starting", "pending"].includes(inspectionRun.status);
                 return <article className="grant-card" key={grant.source_url}>
-                  <div className="grant-main"><div className="grant-score"><strong>{grant.match_score == null ? "—" : <>{grant.match_score}<span>/100</span></>}</strong><small>{grant.match_score == null ? "Unscored" : "Fit"}</small></div><div className="grant-copy"><h4>{grant.title}</h4><p>{grant.match_reason || (grant.match_score == null ? "Scoring is unavailable. Check eligibility at the source." : "Check the source for eligibility details.")}</p></div></div>
+                  <div className="grant-main"><div className={`grant-score ${grant.match_score == null ? "is-unscored" : ""}`}><strong>{grant.match_score == null ? "—" : <>{grant.match_score}<span>/100</span></>}</strong><small>{grant.match_score == null ? "Unscored" : "Fit"}</small></div><div className="grant-copy"><h4>{grant.title}</h4><span className="grant-source">{grant.source_url}</span><p>{grant.match_reason || (grant.match_score == null ? "Scoring is unavailable. Check eligibility at the source." : "Check the source for eligibility details.")}</p></div></div>
                   <div className="grant-criteria"><span>Eligibility notes</span><p>{grant.eligibility_criteria.slice(0, 3).join(" / ") || "Review the source page for criteria."}</p></div>
                   {grant.checked_at && <p className="field-help">Source retrieved {new Date(grant.checked_at).toLocaleString()}. Fit is not a funding probability.</p>}
                   {!!grant.eligibility_checks?.length && <details className="grant-criteria"><summary>Eligibility checklist</summary>{grant.eligibility_checks.map((check, index) => <p key={index}><strong>{check.status}: {check.criterion}</strong><br />{check.reason}</p>)}</details>}
@@ -418,7 +417,7 @@ export default function Dashboard() {
                     <div className="review-actions"><button type="button" className="review-cancel" onClick={() => setReview(null)} disabled={Boolean(busy)}>Close draft</button><button type="button" className="review-cancel" onClick={persistDraft} disabled={Boolean(busy) || Boolean(reviewStale)}>Save draft</button><button type="button" className="review-submit" onClick={startApplication} disabled={Boolean(reviewNeedsWork) || Boolean(reviewStale) || Boolean(inspecting) || Boolean(busy) || Boolean(existingRun) || runUncertain}>{executing ? "Starting run…" : existingRun ? "Run already started" : "Start application run"}</button></div>
                   </div>}
                 </article>;
-              })}</div></> : <div className="empty-state"><div className="empty-illustration" aria-hidden="true"><div className="empty-sheet"><span /><span /><span /></div><div className="empty-lens">✳</div></div><h4>Your shortlist starts here.</h4><p>Tell us about your startup, then scan to see grants worth a closer look.</p></div>}
+              })}</div></> : <div className="empty-state"><div className="empty-illustration" aria-hidden="true"><div className="empty-sheet"><span /><span /><span /></div><div className="empty-lens">✳</div></div><h4>Your shortlist starts here.</h4><p>{profileReady ? "Scan for grants to build a shortlist you can inspect and review." : "Add your startup details, then scan to see grants worth a closer look."}</p></div>}
               {recentRuns.length > 0 && <section className="review-panel" aria-labelledby="recent-runs-heading"><div className="review-heading"><div><h4 id="recent-runs-heading">Recent application runs</h4><p>Saved run status remains available after you leave this page. Verify the final result in the grant portal.</p></div></div>
                 {recentRuns.map((run) => <article className="grant-card" key={run.id}><div className="grant-copy"><h5>{run.grant_title}</h5><p><strong>{run.status === "submitted" ? "Confirmation evidence reported" : run.status === "not_submitted" ? "Not submitted" : run.status === "unknown" ? "Status unknown" : "In progress"}</strong> · {run.message}</p>{run.evidence && <p>Evidence: {run.evidence}</p>}{run.run_id && <p>Run ID: {run.run_id}</p>}</div><div className="grant-actions"><a href={run.application_url} target="_blank" rel="noreferrer">Check grant portal ↗</a>{run.status === "submitted" && <Link href="/thank-you">Thank you page</Link>}</div></article>)}
               </section>}

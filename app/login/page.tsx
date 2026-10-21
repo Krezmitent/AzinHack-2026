@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return <div className="auth-page"><SiteHeader /><main className="auth-main page-wrap"><div className="auth-side"><span className="auth-side-mark">✳</span><h1>Your next opportunity is waiting.</h1><p>Return to your funding desk and keep building a shortlist that fits your startup.</p><div className="auth-side-bottom">Search thoughtfully. Apply confidently.</div></div><AuthForm mode="login" /></main><SiteFooter /></div>;
+  return <div className="auth-page auth-page-v2"><SiteHeader /><main className="auth-main auth-main-v2 page-wrap"><div className="auth-side auth-side-v2"><div className="auth-side-signal" aria-hidden="true"><span /><span /><span /><i /></div><div className="auth-side-content"><h1>Your funding desk is ready.</h1><p>Return to the opportunities you found and the application drafts you started.</p></div><div className="auth-side-bottom">Search with context. Decide with confidence.</div></div><AuthForm mode="login" /></main><SiteFooter /></div>;
 }
