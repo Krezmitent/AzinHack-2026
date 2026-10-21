@@ -37,3 +37,14 @@ services:
     expose:
       - "8000"
     restart: unless-stopped
+
+  worker:
+    build:
+      context: ./python-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./python-service/.env
+    command: ["python", "-m", "app.worker", "--loop"]
+    healthcheck:
+      disable: true
+    restart: unless-stopped

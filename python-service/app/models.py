@@ -1,6 +1,7 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, StringConstraints, field_validator
+from pydantic import BaseModel, Field, StringConstraints, field_validator, model_validator
+from datetime import date
 
 
 Location = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)]
@@ -28,6 +29,54 @@ class Assessment(BaseModel):
     eligibility_checks: list[EligibilityCheck] = Field(default_factory=list, max_length=30)
 
 
+class ApplicationQuestion(BaseModel):
+    label: str = Field(min_length=1, max_length=500)
+    field_type: Literal["text", "textarea", "email", "number", "date", "select", "checkbox", "file", "other"]
+    required: bool = True
+    max_words: int = Field(default=0, ge=0, le=10000)
+    max_characters: int = Field(default=0, ge=0, le=100000)
+    options: list[str] = Field(default_factory=list, max_length=100)
+    help_text: str = Field(default="", max_length=2000)
+
+
+class SourceFact(BaseModel):
+    field: str = Field(min_length=1, max_length=120)
+    value: str = Field(min_length=1, max_length=2000)
+    quote: str = Field(min_length=1, max_length=2000)
+    source_url: str = Field(min_length=1, max_length=2048)
+
+
+class InspectionResult(BaseModel):
+    access: Literal["public", "login_required", "manual_review", "unavailable"]
+    complete: bool
+    explanation: str = Field(min_length=1, max_length=2000)
+    provider: str = Field(default="", max_length=300)
+    round_name: str = Field(default="", max_length=300)
+    amount: str = Field(default="", max_length=300)
+    deadline_date: str = Field(default="", max_length=10)
+    application_url: str = Field(default="", max_length=2048)
+    eligibility_criteria: list[str] = Field(default_factory=list, max_length=20)
+    required_documents: list[str] = Field(default_factory=list, max_length=30)
+    questions: list[ApplicationQuestion] = Field(default_factory=list, max_length=20)
+    evidence: list[SourceFact] = Field(default_factory=list, max_length=50)
+
+    @field_validator("deadline_date")
+    @classmethod
+    def valid_deadline(cls, value):
+        if value:
+            date.fromisoformat(value)
+        return value
+
+    @model_validator(mode="after")
+    def consistent_form(self):
+        labels = [question.label for question in self.questions]
+        if len(set(labels)) != len(labels):
+            raise ValueError("Repeated form labels need manual review.")
+        if self.complete and (self.access != "public" or not self.questions or not self.evidence):
+            raise ValueError("A complete inspection needs a public form, questions and source evidence.")
+        return self
+
+
 class Grant(BaseModel):
     id: str | None = None
     title: str = Field(min_length=1, max_length=300)
@@ -40,6 +89,7 @@ class Grant(BaseModel):
     eligibility_checks: list[EligibilityCheck] = Field(default_factory=list, max_length=30)
     source_version: str | None = None
     checked_at: str | None = None
+    inspection: InspectionResult | None = None
 
 
 class DiscoverGrantsRequest(BaseModel):
@@ -72,6 +122,7 @@ class ExecuteApplicationRequest(BaseModel):
     drafted_answers: dict[str, str] = Field(min_length=1, max_length=20)
     vault_credential_labels: list[str] = Field(default_factory=list, max_length=5)
     confirm_submit: bool = False
+    draft_revision: int | None = Field(default=None, ge=1)
 
     @field_validator("drafted_answers")
     @classmethod

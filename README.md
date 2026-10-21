@@ -83,6 +83,18 @@ The workflow publishes versioned, ready-to-run images. Automatic deployment to a
 
 ## Request and submission flow
 
+### Inspect the actual application
+
+Use **Inspect application form** on a saved opportunity before drafting. TinyFish runs a read-only inspection: it follows official application links and extracts exact questions, limits, choices, documents, funding facts, and source quotes. Login walls or forms that cannot be fully inspected are marked incomplete. The dashboard shows live browser preview when TinyFish supplies one, and **Refresh fit** reassesses against the inspected requirements.
+
+Drafting uses the canonical, server-stored form questions. Submission requires the latest saved draft revision and matching source version; required uploads, unsupported fields, missing answers, and exceeded word/character limits block automated submission. Old generic drafts remain available, but must be reconciled with the inspected form before a run.
+
+Inspection reservations and provider run IDs are persisted before polling. Duplicate clicks reuse an active inspection. An ambiguous start is recorded without an automatic retry. A new, explicitly requested inspection may incur another TinyFish charge.
+
+Docker Compose runs a worker alongside the API. For local development, start the worker from `python-service` with `.venv/bin/python -m app.worker --loop`. For a scheduler, invoke `.venv/bin/python -m app.worker` once every minute. Configure the same Firebase service account and TinyFish key as the API. On serverless deployments, run this worker in a separate scheduled environment; an in-process background task is not sufficient for durable reconciliation.
+
+Run frontend behavior tests with `npm test` using Node.js 22 or later. These tests cover form readiness, provider limits, manual requirements, and omission of optional missing answers. Python tests exercise inspection ownership, duplicate starts, source races, durable worker completion, and saved-revision submission checks with mocked providers.
+
 - Each grant API request carries a Firebase ID token. Both the Next.js proxy and FastAPI verify the token and require a verified email. Execution and run-status requests also check token revocation. Firestore access is scoped to the authenticated user's profile.
 - Discovery uses a founder's sector and location to search globally with TinyFish Search and Fetch. Results are cached for 10 minutes per sector and location in each Python process. Gemini scores the results, and the founder can review and edit draft answers. Provider eligibility criteria and grant availability should be confirmed at the source.
 - Application runs receive the founder-reviewed answers, but no passwords or MFA codes. Vault sign-in is disabled; founders must complete forms that require a provider account directly on that provider's site.

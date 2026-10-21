@@ -1,7 +1,7 @@
 import { forwardToPython } from "../../_proxy";
 
 type Context = { params: Promise<{ path?: string[] }> };
-const allowedPath = /^(?:|drafts\/[a-f0-9]{64})$/;
+const allowedPath = /^(?:|(?:drafts|inspections)\/[a-f0-9]{64})$/;
 
 async function forward(request: Request, context: Context, method: "GET" | "POST") {
   const path = ((await context.params).path ?? []).join("/");

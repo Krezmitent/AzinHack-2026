@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, field_validator
 from starlette.concurrency import run_in_threadpool
 
 from app.auth import authenticated_uid
-from app.models import ExecuteApplicationRequest, StartupProfile
+from app.models import StartupProfile
 from app.services.workspace import list_workspace, save_draft
 
 router = APIRouter(prefix="/api/workspace")
@@ -18,7 +18,9 @@ class SaveDraftRequest(BaseModel):
     @field_validator("answers")
     @classmethod
     def valid_answers(cls, value):
-        return ExecuteApplicationRequest.validate_answers(value)
+        if any(not question.strip() or len(question) > 500 or len(answer) > 10000 for question, answer in value.items()) or not any(answer.strip() for answer in value.values()):
+            raise ValueError("Save at least one answer and keep all questions and answers within their size limits.")
+        return value
 
 
 @router.get("")

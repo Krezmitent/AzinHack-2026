@@ -6,18 +6,22 @@ from starlette.concurrency import run_in_threadpool
 
 from app.auth import authenticated_uid, authenticated_uid_for_execution
 from app.config import settings
-from app.models import DiscoverGrantsRequest, DraftApplicationRequest, ExecuteApplicationRequest, ScoreGrantRequest, StartupProfile
+from app.models import DiscoverGrantsRequest, DraftApplicationRequest, ExecuteApplicationRequest, Grant, ScoreGrantRequest, StartupProfile
 from app.services.firestore import (grant_was_discovered, load_profile, load_application_run,
                                     list_application_runs, record_discovered_grants,
                                     reserve_application_run, update_application_run)
 from app.services.gemini import draft_answers, assess_grant
 from app.services.workspace import load_opportunity, save_assessment
 from app.workspace_routes import router as workspace_router
+from app.inspection_routes import router as inspection_router
+from app.services.inspection import draft_questions
+from app.services.inspection_runs import reviewed_grant
 from app.services.tinyfish import (UpstreamServiceError, discover_and_parse_grants, get_web_agent_run,
                                    start_web_agent, validate_agent_request)
 
 app = FastAPI(title="AutoGrant AI Service", version="1.0.0")
 app.include_router(workspace_router)
+app.include_router(inspection_router)
 app.add_middleware(CORSMiddleware, allow_origins=settings.allowed_origins.split(","), allow_methods=["*"], allow_headers=["*"])
 
 
@@ -59,7 +63,6 @@ async def discover_grants(request: DiscoverGrantsRequest, uid: str = Depends(aut
 @app.post("/api/score-grant")
 async def score(request: ScoreGrantRequest, uid: str = Depends(authenticated_uid)):
     try:
-        from app.models import Grant
         saved = await run_in_threadpool(load_opportunity, uid, request.grant.id or "")
         grant = Grant.model_validate(saved)
         profile = profile_or_firestore(request.profile, request.user_id, uid)
@@ -77,7 +80,17 @@ async def score(request: ScoreGrantRequest, uid: str = Depends(authenticated_uid
 @app.post("/api/draft-application")
 async def draft(request: DraftApplicationRequest, uid: str = Depends(authenticated_uid)):
     try:
-        return {"answers": await draft_answers(profile_or_firestore(request.profile, request.user_id, uid), request.grant, request.questions)}
+        grant = Grant.model_validate(await run_in_threadpool(load_opportunity, uid, request.grant.id or ""))
+        if request.grant.source_version != grant.source_version:
+            raise ValueError("The source changed. Reload before drafting.")
+        questions = draft_questions(grant)
+        if not questions or request.questions != questions:
+            raise ValueError("Draft questions must match the latest inspected form.")
+        return {"answers": await draft_answers(profile_or_firestore(request.profile, request.user_id, uid), grant, questions)}
+    except LookupError as error:
+        raise HTTPException(404, str(error)) from error
+    except ValueError as error:
+        raise HTTPException(409, str(error)) from error
     except UpstreamServiceError as error:
         raise HTTPException(error.status_code, str(error)) from error
 
@@ -93,6 +106,9 @@ async def execute(request: ExecuteApplicationRequest, uid: str = Depends(authent
             raise HTTPException(503, "TinyFish is not configured. No application run was started.")
         if not await run_in_threadpool(grant_was_discovered, uid, request.grant):
             raise HTTPException(403, "This grant was not discovered for your account recently. Scan for grants again.")
+        request.grant = await run_in_threadpool(reviewed_grant, uid, request)
+        application_url = request.grant.application_url or request.grant.source_url
+        validate_agent_request(application_url, request.vault_credential_labels)
         # The reservation is committed before the consequential provider POST. Repeat clicks
         # and retries return the same record, including when the first response was lost.
         run, created = await run_in_threadpool(reserve_application_run, uid, request.grant)
@@ -110,6 +126,10 @@ async def execute(request: ExecuteApplicationRequest, uid: str = Depends(authent
             "status": "pending", "run_id": run_id, "provider_status": "PENDING",
             "message": "The application run started. Submission is not confirmed.",
         })}
+    except LookupError as error:
+        raise HTTPException(404, str(error)) from error
+    except ValueError as error:
+        raise HTTPException(409, str(error)) from error
     except UpstreamServiceError as error:
         raise HTTPException(error.status_code, str(error)) from error
 

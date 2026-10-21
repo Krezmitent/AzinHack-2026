@@ -51,6 +51,7 @@ class RunLifecycleTests(unittest.IsolatedAsyncioTestCase):
                 raise LookupError("Application run was not found.") from error
 
         self.patches = [
+            patch.object(main_module, "reviewed_grant", side_effect=lambda uid, request: request.grant),
             patch.object(main_module.settings, "tinyfish_api_key", "test-key"),
             patch.object(main_module, "grant_was_discovered", return_value=True),
             patch.object(main_module, "reserve_application_run", side_effect=reserve),

@@ -6,12 +6,12 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firebaseServices } from "@/lib/firebase";
-import { discoverGrants, draftApplication, executeApplication, getApplicationRun, listApplicationRuns, scoreGrant, loadWorkspace, saveDraft } from "@/lib/api";
+import { discoverGrants, draftApplication, executeApplication, getApplicationRun, listApplicationRuns, scoreGrant, loadWorkspace, saveDraft, startInspection, getInspection } from "@/lib/api";
 import type { ApplicationRun } from "@/lib/api";
-import type { Grant, SavedDraft, StartupProfile } from "@/lib/types";
+import type { Grant, InspectionRun, SavedDraft, StartupProfile } from "@/lib/types";
+import { draftIssues, formQuestions, submissionAnswers } from "@/lib/application";
 
 const initialProfile: StartupProfile = { sector: "", location: "", revenue: "", demographics: "", pitchDeckText: "", companyFacts: "" };
-const draftQuestions = ["Describe your startup and the problem it solves.", "How will you use this grant?"];
 const MAX_PITCH_LENGTH = 100_000;
 const MAX_PITCH_FILE_BYTES = 100_000;
 const SCORE_CONCURRENCY = 3;
@@ -30,6 +30,7 @@ export default function Dashboard() {
   const [notice, setNotice] = useState<Notice>({ message: "Start with your startup details. We’ll use them to find and rank grants.", tone: "info" });
   const [uid, setUid] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [inspections, setInspections] = useState<InspectionRun[]>([]);
   const [savedDrafts, setSavedDrafts] = useState<SavedDraft[]>([]);
   const [review, setReview] = useState<ApplicationReview | null>(null);
   const [runResult, setRunResult] = useState<ApplicationRun | null>(null);
@@ -48,6 +49,7 @@ export default function Dashboard() {
           setGrants([]);
           setReview(null);
           setSavedDrafts([]);
+          setInspections([]);
           setRecentRuns([]);
           setAuthReady(true);
           if (!loggingOut.current) router.replace("/login");
@@ -73,6 +75,7 @@ export default function Dashboard() {
           if (active && auth.currentUser?.uid === user.uid) {
             setGrants(workspace.opportunities);
             setSavedDrafts(workspace.drafts);
+            setInspections(workspace.inspections);
           }
           if (active && auth.currentUser?.uid === user.uid && saved.exists()) {
             const data = saved.data();
@@ -124,10 +127,8 @@ export default function Dashboard() {
   const canDiscover = Boolean(uid) && authReady && profileReady;
   const profileDisabled = Boolean(busy) || !authReady;
   const reviewStale = review && (review.source_version !== review.grant.source_version || !sameProfile(review.profile, profile));
-  const reviewNeedsWork = review && Object.keys(review.answers).some((question) => {
-    const answer = review.answers[question];
-    return !answer?.trim() || answer.length > 10_000 || answer.startsWith("Information not provided;");
-  });
+  const reviewProblems = review ? draftIssues(review.grant, review.answers) : [];
+  const reviewNeedsWork = reviewProblems.length > 0;
 
   function update(field: keyof StartupProfile, value: string) {
     setProfile((current) => ({ ...current, [field]: value }));
@@ -223,15 +224,66 @@ export default function Dashboard() {
     } finally { setBusy(null); }
   }
 
+  useEffect(() => {
+    if (!uid || !inspections.some((run) => ["starting", "pending"].includes(run.status))) return;
+    let active = true;
+    const timer = window.setInterval(() => {
+      for (const item of inspections.filter((run) => ["starting", "pending"].includes(run.status)).slice(0, 3)) {
+        void getInspection(item.id).then(({ inspection, grant }) => {
+          if (!active) return;
+          setInspections((current) => current.map((run) => run.id === item.id ? inspection : run));
+          if (inspection.status === "completed") {
+            setGrants((current) => current.map((value) => value.id === grant.id ? grant : value));
+            setReview((current) => {
+              if (!current || current.grant.id !== grant.id) return current;
+              const answers = grant.inspection?.complete ? Object.fromEntries(formQuestions(grant).map((question) =>
+                [question.label, current.answers[question.label] || "Information not provided; complete this new form question."])) : current.answers;
+              return { ...current, grant, answers };
+            });
+          }
+        }).catch(() => { /* Durable worker reconciliation continues after transient poll failures. */ });
+      }
+    }, 8000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [uid, inspections]);
+
+  async function inspectForm(grant: Grant) {
+    if (busy) return;
+    setBusy(`inspect:${grant.id}`);
+    try {
+      const { inspection } = await startInspection(grant);
+      setInspections((current) => [...current.filter((item) => item.id !== grant.id), inspection]);
+      setNotice({ message: inspection.message || "Read-only inspection started.", tone: "info" });
+    } catch (error) {
+      setNotice({ message: error instanceof Error ? error.message : "Could not inspect the application.", tone: "error" });
+    } finally { setBusy(null); }
+  }
+
+  async function refreshFit(grant: Grant) {
+    if (busy || !profileReady) return;
+    setBusy(`score:${grant.id}`);
+    try {
+      const assessment = await scoreGrant(grant, profile);
+      setGrants((current) => current.map((item) => item.id === grant.id ? { ...item, ...assessment } : item));
+      setNotice({ message: "Fit and eligibility checks updated using the current requirements.", tone: "success" });
+    } catch (error) {
+      setNotice({ message: error instanceof Error ? error.message : "Could not refresh fit.", tone: "error" });
+    } finally { setBusy(null); }
+  }
+
   async function prepareDraft(grant: Grant) {
     if (busy) return;
     setBusy(`draft:${grant.source_url}`);
     try {
       const existing = savedDrafts.find((draft) => draft.opportunity_id === grant.id);
       if (existing) {
-        setReview({ grant, ...existing });
+        const questions = formQuestions(grant);
+        const answers = questions.length ? Object.fromEntries(questions.map((question) => [question.label, existing.answers[question.label] || "Information not provided; complete this new form question."])) : existing.answers;
+        setReview({ grant, ...existing, answers });
       } else {
-        const { answers } = await draftApplication(grant, profile, draftQuestions);
+        const questions = formQuestions(grant).map((question) => question.label);
+        if (!grant.inspection?.complete || !questions.length) throw new Error("Inspect the complete form before drafting answers.");
+        const { answers } = await draftApplication(grant, profile, questions);
         const { draft } = await saveDraft(grant, profile, answers, 0);
         setSavedDrafts((current) => [...current, draft]);
         setReview({ grant, ...draft });
@@ -269,13 +321,22 @@ export default function Dashboard() {
     }
     setBusy(`execute:${grant.source_url}`);
     setRunResult(null);
+    let dispatched = false;
     try {
-      const { run } = await executeApplication(grant, review.answers, []);
+      const { draft } = await saveDraft(grant, profile, review.answers, review.revision);
+      setSavedDrafts((current) => [...current.filter((item) => item.opportunity_id !== grant.id), draft]);
+      setReview({ grant, ...draft });
+      dispatched = true;
+      const { run } = await executeApplication(grant, submissionAnswers(draft.answers), [], draft.revision);
       if (!run?.id || !["starting", "pending", "submitted", "not_submitted", "unknown"].includes(run.status)) throw new Error("The run service returned no reliable status.");
       rememberRun(run);
       setNotice({ message: run.message, tone: run.status === "not_submitted" || run.status === "unknown" ? "error" : run.status === "submitted" ? "success" : "info" });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Could not determine the application run status.";
+      if (!dispatched) {
+        setNotice({ message, tone: "error" });
+        return;
+      }
       setRunUncertain(true);
       try {
         const { runs } = await listApplicationRuns();
@@ -335,20 +396,25 @@ export default function Dashboard() {
                 const drafting = busy === `draft:${grant.source_url}`;
                 const executing = busy === `execute:${grant.source_url}`;
                 const existingRun = recentRuns.find((run) => run.source_url === grant.source_url && run.application_url === (grant.application_url || grant.source_url));
+                const inspectionRun = inspections.find((item) => item.id === grant.id);
+                const inspecting = inspectionRun && ["starting", "pending"].includes(inspectionRun.status);
                 return <article className="grant-card" key={grant.source_url}>
                   <div className="grant-main"><div className="grant-score"><strong>{grant.match_score == null ? "—" : <>{grant.match_score}<span>/100</span></>}</strong><small>{grant.match_score == null ? "Unscored" : "Fit"}</small></div><div className="grant-copy"><h4>{grant.title}</h4><p>{grant.match_reason || (grant.match_score == null ? "Scoring is unavailable. Check eligibility at the source." : "Check the source for eligibility details.")}</p></div></div>
                   <div className="grant-criteria"><span>Eligibility notes</span><p>{grant.eligibility_criteria.slice(0, 3).join(" / ") || "Review the source page for criteria."}</p></div>
                   {grant.checked_at && <p className="field-help">Source retrieved {new Date(grant.checked_at).toLocaleString()}. Fit is not a funding probability.</p>}
                   {!!grant.eligibility_checks?.length && <details className="grant-criteria"><summary>Eligibility checklist</summary>{grant.eligibility_checks.map((check, index) => <p key={index}><strong>{check.status}: {check.criterion}</strong><br />{check.reason}</p>)}</details>}
-                  <div className="grant-actions"><a href={grant.application_url || grant.source_url} target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a><button type="button" onClick={() => prepareDraft(grant)} disabled={Boolean(busy)}>{drafting ? "Opening…" : savedDrafts.some((item) => item.opportunity_id === grant.id) ? "Open saved draft" : "Draft answers"}</button></div>
+                  {grant.inspection && <div className="grant-criteria"><p><strong>{grant.inspection.provider || "Provider unconfirmed"}</strong>{grant.inspection.round_name ? ` · ${grant.inspection.round_name}` : ""}</p><p>{[grant.inspection.amount, grant.inspection.deadline_date ? `Deadline date: ${grant.inspection.deadline_date}` : ""].filter(Boolean).join(" · ")}</p><p>{grant.inspection.explanation}</p>{grant.inspection.required_documents.length > 0 && <p>Required documents: {grant.inspection.required_documents.join(", ")}</p>}<details><summary>Source evidence</summary>{grant.inspection.evidence.map((fact, index) => <p key={index}><strong>{fact.field}: {fact.value}</strong><br />“{fact.quote}” <a href={fact.source_url} target="_blank" rel="noreferrer">Source</a></p>)}</details></div>}
+                  {inspectionRun && <p className="field-help" role="status">{inspectionRun.message || inspectionRun.status}</p>}
+                  {inspecting && inspectionRun.streaming_url && <iframe title={`Live inspection of ${grant.title}`} src={inspectionRun.streaming_url} sandbox="allow-scripts allow-same-origin" referrerPolicy="no-referrer" style={{ width: "100%", height: 360, border: 0 }} />}
+                  <div className="grant-actions"><button type="button" onClick={() => refreshFit(grant)} disabled={Boolean(busy) || Boolean(inspecting) || !profileReady}>Refresh fit</button><button type="button" onClick={() => inspectForm(grant)} disabled={Boolean(busy) || Boolean(inspecting)}>{inspecting ? "Inspecting…" : grant.inspection ? "Inspect again" : "Inspect application form"}</button><a href={grant.application_url || grant.source_url} target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a><button type="button" onClick={() => prepareDraft(grant)} disabled={Boolean(busy) || Boolean(inspecting) || (!grant.inspection?.complete && !savedDrafts.some((item) => item.opportunity_id === grant.id))}>{drafting ? "Opening…" : savedDrafts.some((item) => item.opportunity_id === grant.id) ? "Open saved draft" : "Draft answers"}</button></div>
                   {isReviewing && review && <div className="review-panel" id="application-review"><div className="review-heading"><div><h5>Review your draft</h5><p>Check every answer against the grant’s actual form. Starting a run may submit this application to the provider.</p></div><span className="review-badge">Your call</span></div>
-                    {Object.entries(review.answers).map(([question, answer]) => <div className="field review-field" key={question}><label htmlFor={`answer-${question}`}>{question}</label><textarea id={`answer-${question}`} rows={5} maxLength={10_000} disabled={Boolean(busy)} value={answer} onChange={(event) => setReview((current) => current ? { ...current, answers: { ...current.answers, [question]: event.target.value } } : null)} /></div>)}
+                    {Object.entries(review.answers).map(([question, answer]) => <div className="field review-field" key={question}><label htmlFor={`answer-${question}`}>{question}</label><textarea id={`answer-${question}`} rows={5} maxLength={10_000} disabled={Boolean(busy)} value={answer} onChange={(event) => setReview((current) => current ? { ...current, answers: { ...current.answers, [question]: event.target.value } } : null)} /><span className="field-help">{(() => { const field = grant.inspection?.questions.find((item) => item.label === question); return field ? [field.required ? "Required" : "Optional", field.help_text, field.max_words ? `${answer.trim() ? answer.trim().split(/\s+/).length : 0}/${field.max_words} words` : "", field.max_characters ? `${answer.length}/${field.max_characters} characters` : "", field.options.length ? `Choices: ${field.options.join("; ")}` : ""].filter(Boolean).join(" · ") : ""; })()}</span></div>)}
                     <p className="field-help">Saved revision {review.revision}. Save edits before leaving this page.</p>
                     {reviewStale && <div className="review-warning"><p>Your profile or the source changed since this draft was saved. Review all answers against the current details.</p><button type="button" disabled={Boolean(busy)} onClick={() => setReview({ ...review, source_version: grant.source_version || "", profile: { ...profile } })}>I reviewed the current details</button></div>}
                     <p className="field-help">This run cannot sign into a grant portal. If the provider requires login, open its portal yourself.</p>
-                    {reviewNeedsWork && <p className="review-warning">Complete missing answers and keep each answer under 10,000 characters before starting the run.</p>}
+                    {reviewNeedsWork && <div className="review-warning">{reviewProblems.map((problem) => <p key={problem}>{problem}</p>)}</div>}
                     {runResult && <p className={runResult.status === "not_submitted" || runResult.status === "unknown" ? "review-warning" : "field-help"} role="status">{runResult.message || "Submission status is unknown."}{runResult.evidence ? ` Evidence: ${runResult.evidence}` : ""}</p>}
-                    <div className="review-actions"><button type="button" className="review-cancel" onClick={() => setReview(null)} disabled={Boolean(busy)}>Close draft</button><button type="button" className="review-cancel" onClick={persistDraft} disabled={Boolean(busy) || Boolean(reviewStale) || Boolean(reviewNeedsWork)}>Save draft</button><button type="button" className="review-submit" onClick={startApplication} disabled={Boolean(reviewNeedsWork) || Boolean(reviewStale) || Boolean(busy) || Boolean(existingRun) || runUncertain}>{executing ? "Starting run…" : existingRun ? "Run already started" : "Start application run"}</button></div>
+                    <div className="review-actions"><button type="button" className="review-cancel" onClick={() => setReview(null)} disabled={Boolean(busy)}>Close draft</button><button type="button" className="review-cancel" onClick={persistDraft} disabled={Boolean(busy) || Boolean(reviewStale)}>Save draft</button><button type="button" className="review-submit" onClick={startApplication} disabled={Boolean(reviewNeedsWork) || Boolean(reviewStale) || Boolean(inspecting) || Boolean(busy) || Boolean(existingRun) || runUncertain}>{executing ? "Starting run…" : existingRun ? "Run already started" : "Start application run"}</button></div>
                   </div>}
                 </article>;
               })}</div></> : <div className="empty-state"><div className="empty-illustration" aria-hidden="true"><div className="empty-sheet"><span /><span /><span /></div><div className="empty-lens">✳</div></div><h4>Your shortlist starts here.</h4><p>Tell us about your startup, then scan to see grants worth a closer look.</p></div>}
