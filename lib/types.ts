@@ -63,3 +63,22 @@ export type SavedDraft = {
   profile: StartupProfile;
   updated_at: string;
 };
+
+export type FundingWatch = {
+  id: string; type: "fetch" | "search"; target: string; opportunity_id?: string; name: string;
+  cadence: "daily" | "six_hourly"; timezone: string; purpose: string;
+  status: string; monitor_id?: string | null; last_error?: string; last_checked_at?: string | null;
+  check_status?: string | null; created_at: string;
+};
+export type FundingEvent = {
+  id: string; kind: string; title: string; message: string; created_at: string; read: boolean;
+  source_url?: string; opportunity_id?: string; requires_review?: boolean; changed_fields?: string[];
+  quotes?: { field: string; before: string; after: string; quote: string }[];
+};
+export type TrackedApplication = {
+  id: string; grant_title: string; source_url: string; application_url: string;
+  status: "draft" | "submitted" | "under_review" | "information_requested" | "awarded" | "rejected" | "withdrawn";
+  status_source?: string; note: string; revision: number; deadline_date?: string; timezone: string;
+  updated_at: string; reminder_sent_for?: string;
+};
+export type FundingRadarData = { watches: FundingWatch[]; events: FundingEvent[]; applications: TrackedApplication[] };

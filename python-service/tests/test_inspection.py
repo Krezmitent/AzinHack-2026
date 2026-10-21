@@ -6,7 +6,7 @@ import httpx
 from app import main, worker
 from app.auth import authenticated_uid, authenticated_uid_for_execution
 from app.models import Grant
-from app.services import firestore as store, inspection, inspection_runs, workspace
+from app.services import applications, firestore as store, inspection, inspection_runs, monitors, work_queue, workspace
 from fakes import MemoryFirestore
 from test_workspace import PROFILE
 
@@ -24,7 +24,7 @@ class InspectionTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.db = MemoryFirestore()
         self.patches = [patch.object(module, "get_firestore_client", return_value=self.db)
-                        for module in (workspace, inspection_runs, store, worker)]
+                        for module in (workspace, inspection_runs, store, worker, applications, monitors, work_queue)]
         self.patches += [patch.object(workspace.firestore, "transactional", side_effect=lambda function: function),
                          patch.object(inspection, "start_inspection", new=AsyncMock(return_value="inspect-1")),
                          patch.object(inspection, "fetch_inspection", new=AsyncMock(return_value={"run_id": "inspect-1", "status": "COMPLETED", "result": RESULT})),

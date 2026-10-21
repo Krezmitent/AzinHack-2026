@@ -14,6 +14,7 @@ from app.services.gemini import draft_answers, assess_grant
 from app.services.workspace import load_opportunity, save_assessment
 from app.workspace_routes import router as workspace_router
 from app.inspection_routes import router as inspection_router
+from app.monitor_routes import router as monitor_router, webhooks as monitor_webhooks
 from app.services.inspection import draft_questions
 from app.services.inspection_runs import reviewed_grant
 from app.services.tinyfish import (UpstreamServiceError, discover_and_parse_grants, get_web_agent_run,
@@ -22,6 +23,8 @@ from app.services.tinyfish import (UpstreamServiceError, discover_and_parse_gran
 app = FastAPI(title="AutoGrant AI Service", version="1.0.0")
 app.include_router(workspace_router)
 app.include_router(inspection_router)
+app.include_router(monitor_router)
+app.include_router(monitor_webhooks)
 app.add_middleware(CORSMiddleware, allow_origins=settings.allowed_origins.split(","), allow_methods=["*"], allow_headers=["*"])
 
 

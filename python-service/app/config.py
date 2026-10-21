@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
 
 
 class Settings(BaseSettings):
@@ -7,6 +8,8 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-2.5-flash"
     firebase_service_account_json: str = ""
     allowed_origins: str = "http://localhost:3000"
+    public_webhook_base_url: str = ""
+    max_monitors_per_user: int = Field(default=10, ge=1, le=50)
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

@@ -37,6 +37,9 @@ class Reference:
             raise Conflict("exists")
         self.set(value)
 
+    def delete(self):
+        self.db.data.pop(self.path, None)
+
 
 class Collection:
     def __init__(self, db, path):
@@ -63,7 +66,8 @@ class Collection:
                   if key.startswith(self.path + "/") and key.count("/") == self.path.count("/") + 1]
         field_filter = getattr(self, "field_filter", None)
         if field_filter:
-            values = [item for item in values if item.value.get(field_filter.field_path) == field_filter.value]
+            values = [item for item in values if (item.value.get(field_filter.field_path) == field_filter.value
+                      if field_filter.op_string == "==" else item.value.get(field_filter.field_path, "") <= field_filter.value)]
         if self.order:
             values.sort(key=lambda item: item.value.get(self.order, ""), reverse=True)
         return values[:self.count]
@@ -75,6 +79,9 @@ class Transaction:
 
     def update(self, reference, value):
         reference.update(value)
+
+    def delete(self, reference):
+        reference.delete()
 
     def commit(self):
         pass

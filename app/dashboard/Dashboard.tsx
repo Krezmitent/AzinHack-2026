@@ -10,6 +10,7 @@ import { discoverGrants, draftApplication, executeApplication, getApplicationRun
 import type { ApplicationRun } from "@/lib/api";
 import type { Grant, InspectionRun, SavedDraft, StartupProfile } from "@/lib/types";
 import { draftIssues, formQuestions, submissionAnswers } from "@/lib/application";
+import FundingRadar from "@/components/FundingRadar";
 
 const initialProfile: StartupProfile = { sector: "", location: "", revenue: "", demographics: "", pitchDeckText: "", companyFacts: "" };
 const MAX_PITCH_LENGTH = 100_000;
@@ -422,6 +423,7 @@ export default function Dashboard() {
                 {recentRuns.map((run) => <article className="grant-card" key={run.id}><div className="grant-copy"><h5>{run.grant_title}</h5><p><strong>{run.status === "submitted" ? "Confirmation evidence reported" : run.status === "not_submitted" ? "Not submitted" : run.status === "unknown" ? "Status unknown" : "In progress"}</strong> · {run.message}</p>{run.evidence && <p>Evidence: {run.evidence}</p>}{run.run_id && <p>Run ID: {run.run_id}</p>}</div><div className="grant-actions"><a href={run.application_url} target="_blank" rel="noreferrer">Check grant portal ↗</a>{run.status === "submitted" && <Link href="/thank-you">Thank you page</Link>}</div></article>)}
               </section>}
             </section>
+            {uid && authReady && <FundingRadar grants={grants} onMessage={(message, tone) => setNotice({ message, tone })} onGrantUpdate={(grant) => setGrants((current) => current.map((item) => item.id === grant.id ? grant : item))} />}
           </div>
         </div>
       </main>
