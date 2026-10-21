@@ -33,6 +33,8 @@ def _run_id(grant: Grant) -> str:
 
 
 def record_discovered_grants(user_id: str, grants: list[Grant]) -> None:
+    from app.services.workspace import save_opportunities
+    save_opportunities(user_id, grants)
     client = get_firestore_client()
     batch = client.batch()
     collection = client.collection("users").document(user_id).collection("discovered_grants")

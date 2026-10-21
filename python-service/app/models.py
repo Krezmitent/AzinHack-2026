@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 
@@ -13,6 +13,19 @@ class StartupProfile(BaseModel):
     revenue: str = Field(min_length=1, max_length=120)
     demographics: str = Field(max_length=2_000)
     pitchDeckText: str = Field(min_length=20, max_length=100_000)
+    companyFacts: str = Field(default="", max_length=4_000)
+
+
+class EligibilityCheck(BaseModel):
+    criterion: str = Field(min_length=1, max_length=500)
+    status: Literal["met", "unmet", "unknown"]
+    reason: str = Field(min_length=1, max_length=1000)
+
+
+class Assessment(BaseModel):
+    match_score: int = Field(ge=0, le=100, strict=True)
+    match_reason: str = Field(min_length=1, max_length=1000)
+    eligibility_checks: list[EligibilityCheck] = Field(default_factory=list, max_length=30)
 
 
 class Grant(BaseModel):
@@ -24,6 +37,9 @@ class Grant(BaseModel):
     clean_markdown: str = Field(default="", max_length=250_000)
     match_score: int | None = None
     match_reason: str | None = None
+    eligibility_checks: list[EligibilityCheck] = Field(default_factory=list, max_length=30)
+    source_version: str | None = None
+    checked_at: str | None = None
 
 
 class DiscoverGrantsRequest(BaseModel):
