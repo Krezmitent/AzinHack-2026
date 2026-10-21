@@ -9,7 +9,7 @@ export default function SiteFooter() {
           <Link className="brand footer-brand" href="/" aria-label="AutoGrant home">
             <BrandLogo />
           </Link>
-          <p>Find the opportunities worth a closer look.</p>
+          <p>A clearer route from discovery to application.</p>
         </div>
         <nav aria-label="Footer navigation">
           <Link href="/#how-it-works">How it works</Link>

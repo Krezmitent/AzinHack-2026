@@ -7,46 +7,46 @@ import { verifiedReviews } from "@/lib/reviews";
 import "./landing-redesign.css";
 
 export const metadata: Metadata = {
-  title: "Find Startup Grants That Fit | AutoGrant",
-  description: "Discover startup grants, review their sources and fit, and prepare applications with AutoGrant."
+  title: "A clearer route to your next grant",
+  description: "Find startup grants, understand the fit, and prepare your next application with AutoGrant."
 };
+
+const features = [
+  { kind: "search", title: "Find the opportunities.", copy: "Search public funding pages around your startup’s sector, location, and stage.", line: "Your startup, at the centre of the search", rows: ["Sector and location", "Stage and funding needs", "Original programme pages"] },
+  { kind: "fit", title: "Understand the fit.", copy: "See the reasoning behind a match and the eligibility questions that still need checking.", line: "A reason behind every recommendation", rows: ["What looks relevant", "What needs verification", "The source, always in reach"] },
+  { kind: "draft", title: "Make your case.", copy: "Inspect the application questions, prepare a draft, and shape every answer before proceeding.", line: "A starting point for your next application", rows: ["The actual form questions", "Editable draft answers", "Your review before a run"] }
+];
 
 export default function HomePage() {
   return (
-    <div className="marketing-shell editorial-home">
+    <div className="marketing-shell modern-home">
       <SiteHeader />
       <main>
-        <section className="editorial-hero" aria-labelledby="landing-heading">
-          <div className="page-wrap editorial-hero__grid">
-            <div className="editorial-hero__copy">
-              <p className="editorial-hero__lead">A better way through the funding search.</p>
-              <h1 id="landing-heading">Find grants.<br />Know <em>why.</em></h1>
-              <p className="editorial-hero__intro">AutoGrant turns scattered funding pages into a shortlist you can actually evaluate. See the source, understand the fit, and decide what deserves your time.</p>
-              <div className="editorial-hero__actions">
-                <Link className="editorial-button" href="/signup">Start your search <span aria-hidden="true">↗</span></Link>
-                <Link className="editorial-link" href="/#how-it-works">See the workflow</Link>
-              </div>
-              <p className="editorial-hero__assurance"><span aria-hidden="true">✳</span> Every application starts with your review.</p>
-            </div>
-            <LandingBrief />
+        <section className="modern-hero" aria-labelledby="landing-heading">
+          <div className="modern-hero__ribbons modern-hero__ribbons--left" aria-hidden="true"><i /><i /><i /><i /><i /></div>
+          <div className="modern-hero__ribbons modern-hero__ribbons--right" aria-hidden="true"><i /><i /><i /><i /><i /></div>
+          <div className="page-wrap modern-hero__content">
+            <p className="modern-hero__badge"><span aria-hidden="true">✳</span> Built for the people building what’s next</p>
+            <h1 id="landing-heading">A clearer route to<br />your next grant.</h1>
+            <p className="modern-hero__intro">Find funding that fits what you’re building. AutoGrant brings the opportunities, the evidence, and your application into one place.</p>
+            <div className="modern-actions"><Link className="modern-button modern-button--primary" href="/signup">Find my grants <span aria-hidden="true">↗</span></Link><a className="modern-button modern-button--secondary" href="#how-it-works">See how it works</a></div>
+            <p className="modern-hero__note">You make the decisions. AutoGrant helps with the groundwork.</p>
           </div>
-          <div className="page-wrap editorial-hero__lower"><span>Source linked discovery</span><span>Fit with context</span><span>Founder’s final say</span></div>
+          <div className="modern-hero__path page-wrap"><span>Discover</span><i aria-hidden="true" /><span>Understand</span><i aria-hidden="true" /><span>Prepare</span></div>
         </section>
 
-        <section className="editorial-process page-wrap" id="how-it-works" aria-labelledby="how-heading">
-          <div className="editorial-section-intro"><h2 id="how-heading">A clearer path from search to application.</h2><p>Finding a promising grant is only the beginning. The real work is checking the rules and making a case that holds up.</p></div>
-          <div className="editorial-process__rows">
-            <article><span>01</span><div><h3>Build your profile</h3><p>Tell us your sector, location, stage, and what you are building.</p></div><b aria-hidden="true">↗</b></article>
-            <article><span>02</span><div><h3>Review the evidence</h3><p>See opportunities with source pages, fit notes, and open eligibility questions.</p></div><b aria-hidden="true">↗</b></article>
-            <article><span>03</span><div><h3>Prepare deliberately</h3><p>Inspect the application, edit the draft, and choose when to proceed.</p></div><b aria-hidden="true">↗</b></article>
-          </div>
+        <section className="modern-workflow page-wrap" id="how-it-works" aria-labelledby="workflow-heading">
+          <div className="modern-section-heading"><p>From possibility to a plan</p><h2 id="workflow-heading">Less searching in circles.<br />More moving forward.</h2><p>Give your funding search a direction, then work through the details with the original sources in view.</p></div>
+          <LandingBrief />
         </section>
 
-        <section className="editorial-principle" id="why-autogrant" aria-labelledby="principle-heading"><div className="page-wrap editorial-principle__grid"><div><p className="editorial-principle__kicker">The principle</p><h2 id="principle-heading">A shortlist should come with receipts.</h2></div><div className="editorial-principle__detail"><p>A score alone cannot tell you whether a grant is worth pursuing. AutoGrant keeps the original source and the unresolved questions next to each recommendation.</p><ul><li><span>01</span> Open the programme page we found.</li><li><span>02</span> Check what is known and what remains uncertain.</li><li><span>03</span> Edit every application answer before you act.</li></ul><Link href="/signup">Create a profile <span aria-hidden="true">↗</span></Link></div></div></section>
+        <section className="modern-capabilities" id="why-autogrant" aria-labelledby="capabilities-heading"><div className="page-wrap"><div className="modern-capabilities__heading"><p>The whole funding workflow</p><h2 id="capabilities-heading">Good opportunities deserve<br />a better process.</h2></div><div className="modern-feature-grid">{features.map((feature) => <article className={`modern-feature modern-feature--${feature.kind}`} key={feature.kind}><div className="modern-feature__visual" aria-hidden="true"><div className="modern-feature__prompt"><span>{feature.kind === "search" ? "⌕" : feature.kind === "fit" ? "✓" : "✎"}</span>{feature.line}</div><div className="modern-feature__paper">{feature.rows.map((row, i) => <div key={row}><span className={`modern-feature__mini mini-${i}`} />{row}<b>✓</b></div>)}</div></div><h3>{feature.title}</h3><p>{feature.copy}</p></article>)}</div></div></section>
 
-        <section className="editorial-reviews page-wrap" id="reviews" aria-labelledby="reviews-heading"><div className="editorial-section-intro"><h2 id="reviews-heading">Founder feedback</h2><p>We publish founders’ words only with their approval and attribution.</p></div>{verifiedReviews.length ? <div className="editorial-reviews__grid">{verifiedReviews.map((review) => <figure key={`${review.name}-${review.quote}`}><blockquote>“{review.quote}”</blockquote><figcaption><strong>{review.name}</strong><span>{review.role}</span>{review.sourceUrl && <a href={review.sourceUrl} target="_blank" rel="noreferrer">Read original review</a>}</figcaption></figure>)}</div> : <p className="editorial-reviews__empty">No founder reviews have been published yet.</p>}</section>
+        <section className="modern-control page-wrap" aria-labelledby="control-heading"><div className="modern-control__copy"><p className="modern-section-label">The final say stays with you</p><h2 id="control-heading">Your startup.<br />Your story.<br />Your call.</h2><p>AutoGrant helps you find and prepare. You check the programme rules, edit the answers, and decide when an application run begins.</p><Link className="modern-button modern-button--secondary" href="/signup">Create your profile <span aria-hidden="true">↗</span></Link></div><div className="modern-control__visual"><div className="modern-review"><div className="modern-review__top"><span className="modern-review__avatar">A</span><div><strong>Application review</strong><span>Before you proceed</span></div><b>In your hands</b></div><h3>Make it sound like you.</h3><p>Review the draft against the actual application questions. Change any answer before you move forward.</p><div className="modern-review__line"><span>Source checked</span><b>✓</b></div><div className="modern-review__line"><span>Answers reviewed</span><b>✓</b></div><div className="modern-review__approval"><span aria-hidden="true">↗</span> You choose the next step.</div></div><div className="modern-control__caption"><span aria-hidden="true">✳</span> Support through the work. Control over the outcome.</div></div></section>
 
-        <section className="editorial-final page-wrap"><div><p>Ready when you are.</p><h2>Make your next application count.</h2></div><Link className="editorial-button editorial-button--light" href="/signup">Create your profile <span aria-hidden="true">↗</span></Link></section>
+        {verifiedReviews.length > 0 && <section className="modern-reviews page-wrap" id="reviews"><div className="modern-section-heading"><h2>In founders’ own words.</h2></div><div className="modern-reviews__grid">{verifiedReviews.map((review) => <figure key={`${review.name}-${review.quote}`}><blockquote>“{review.quote}”</blockquote><figcaption><strong>{review.name}</strong><span>{review.role}</span>{review.sourceUrl && <a href={review.sourceUrl} target="_blank" rel="noreferrer">Read original review</a>}</figcaption></figure>)}</div></section>}
+
+        <section className="modern-final page-wrap"><div className="modern-final__bands" aria-hidden="true"><i /><i /><i /><i /></div><h2>Build what’s next.<br />Find what funds it.</h2><Link className="modern-button modern-button--primary" href="/signup">Find my grants <span aria-hidden="true">↗</span></Link></section>
       </main>
       <SiteFooter />
     </div>

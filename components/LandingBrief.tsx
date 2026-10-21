@@ -2,60 +2,17 @@
 
 import { useState } from "react";
 
-type Sector = "Climate" | "Fintech" | "Health";
-
-const briefs: Record<Sector, { focus: string; reason: string; check: string; note: string }> = {
-  Climate: {
-    focus: "Climate technology",
-    reason: "Look for programmes backing pilots, adaptation, and measurable environmental outcomes.",
-    check: "Does the programme fund your current pilot stage?",
-    note: "A climate focus can narrow the search. Programme rules still decide eligibility."
-  },
-  Fintech: {
-    focus: "Financial technology",
-    reason: "Look for programmes interested in access, infrastructure, and responsible financial services.",
-    check: "Are regulated financial products allowed by the funder?",
-    note: "Sector fit is one signal. Licensing and geography can change eligibility."
-  },
-  Health: {
-    focus: "Health technology",
-    reason: "Look for programmes supporting clinical access, public health, and care delivery.",
-    check: "Is your product at the required validation stage?",
-    note: "A relevant theme does not confirm clinical or regulatory eligibility."
-  }
-};
+const steps = [
+  { name: "Discover", title: "Start with what you’re building.", description: "Your profile gives the search its direction. Sector, location, and stage help surface opportunities worth a closer look.", prompt: "Find funding for my startup", focus: "Your startup profile", rows: [{label:"Sector",value:"Climate technology"},{label:"Based in",value:"India"},{label:"Stage",value:"Pilot stage"}], note: "A starting point for a more relevant search.", color: "orange" },
+  { name: "Understand", title: "Get the context behind the match.", description: "A promising title is only the beginning. Review the original page, the fit notes, and any eligibility details that are still unknown.", prompt: "Help me understand the fit", focus: "Opportunity review", rows: [{label:"Sector relevance",value:"Review fit notes"},{label:"Programme rules",value:"Open original source"},{label:"Eligibility",value:"Check unknowns"}], note: "A fit assessment is guidance, not an eligibility guarantee.", color: "purple" },
+  { name: "Prepare", title: "Turn your story into a first draft.", description: "Inspect the real application questions, prepare answers from your profile, and edit them into a version you’re ready to stand behind.", prompt: "Help me prepare my application", focus: "Application workspace", rows: [{label:"Form questions",value:"Inspect the application"},{label:"Your answers",value:"Prepare and edit"},{label:"Next step",value:"Review before proceeding"}], note: "You review the draft before an application run begins.", color: "blue" }
+];
 
 export default function LandingBrief() {
-  const [sector, setSector] = useState<Sector>("Climate");
-  const brief = briefs[sector];
-
-  return (
-    <div className="brief-demo" aria-label="Illustrative funding brief">
-      <div className="brief-demo__topline">
-        <span className="brief-demo__seal" aria-hidden="true"><span /></span>
-        <span>Inside the funding desk</span>
-        <span className="brief-demo__edition">Sample view</span>
-      </div>
-      <div className="brief-demo__body">
-        <div className="brief-demo__heading">
-          <span>Start with your story</span>
-          <h2>Make the search yours.</h2>
-          <p>Choose a field to see how a funding brief changes.</p>
-        </div>
-        <div className="brief-demo__choices" role="group" aria-label="Choose an example startup field">
-          {(Object.keys(briefs) as Sector[]).map((name) => (
-            <button key={name} type="button" aria-pressed={sector === name} onClick={() => setSector(name)}>{name}</button>
-          ))}
-        </div>
-        <div className="brief-demo__sheet" aria-live="polite">
-          <div className="brief-demo__sheet-head"><span>Search brief</span><span>01 / 03</span></div>
-          <h3>{brief.focus}</h3>
-          <div className="brief-demo__entry"><span className="brief-demo__entry-symbol">↗</span><div><strong>Where to look</strong><p>{brief.reason}</p></div></div>
-          <div className="brief-demo__entry"><span className="brief-demo__entry-symbol">?</span><div><strong>What to verify</strong><p>{brief.check}</p></div></div>
-          <div className="brief-demo__verdict"><span className="brief-demo__verdict-dot" /><p>{brief.note}</p></div>
-        </div>
-      </div>
-      <p className="brief-demo__foot">Illustrative example. Real opportunities link to their original source.</p>
-    </div>
-  );
+  const [active, setActive] = useState(0);
+  const step = steps[active];
+  return <div className={`journey journey--${step.color}`}>
+    <div className="journey__nav" role="group" aria-label="Explore the AutoGrant workflow">{steps.map((item, index) => <button key={item.name} type="button" aria-pressed={active === index} onClick={() => setActive(index)}><span className="journey__step-dot" aria-hidden="true" />{item.name}<span className="journey__nav-arrow" aria-hidden="true">↗</span></button>)}</div>
+    <div className="journey__stage" aria-live="polite"><div className="journey__copy"><span className="journey__icon" aria-hidden="true">{active === 0 ? "⌕" : active === 1 ? "✓" : "✎"}</span><h3>{step.title}</h3><p>{step.description}</p><span className="journey__sample">An illustrative walkthrough</span></div><div className="journey__visual"><div className="journey__prompt"><span aria-hidden="true">✳</span>{step.prompt}</div><div className="journey__document"><div className="journey__document-title"><span className="journey__document-symbol" aria-hidden="true">A</span><div><strong>{step.focus}</strong><span>AutoGrant workspace</span></div><i aria-hidden="true">•••</i></div>{step.rows.map((row) => <div className="journey__row" key={row.label}><span>{row.label}</span><strong>{row.value}</strong></div>)}<div className="journey__document-note"><span aria-hidden="true">↗</span>{step.note}</div></div></div></div>
+  </div>;
 }
