@@ -175,7 +175,8 @@ async def _discover_uncached(location: str, sector: str) -> list[Grant]:
         return []
     # Fetch supports clean Markdown, JSON, or HTML. HTML is selected here so links and
     # eligibility sections can be parsed deterministically into the Grant JSON model.
-    response = await _request("POST", FETCH_URL, json={"urls": urls, "format": "html", "links": True})
+    response = await _request("POST", FETCH_URL, timeout=30.0,
+                              json={"urls": urls, "format": "html", "links": True, "ttl": 0, "per_url_timeout_ms": 20000})
     fetched = _response_json(response).get("results")
     if not isinstance(fetched, list):
         raise UpstreamServiceError("TinyFish Fetch returned an invalid result list.")
@@ -194,7 +195,8 @@ async def _discover_uncached(location: str, sector: str) -> list[Grant]:
         criteria, application_url, clean_markdown = _criteria_and_link(html[:250_000], url)
         page_title = page.get("title") or result.get("title")
         title = page_title.strip()[:300] if isinstance(page_title, str) and page_title.strip() else "Untitled grant"
-        grants.append(Grant(title=title, source_url=url, application_url=application_url, eligibility_criteria=criteria, clean_markdown=clean_markdown))
+        grants.append(Grant(title=title, source_url=url, application_url=application_url, eligibility_criteria=criteria,
+                            clean_markdown=clean_markdown, checked_at=datetime.now(timezone.utc).isoformat()))
     return grants
 
 

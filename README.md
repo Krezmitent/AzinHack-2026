@@ -28,6 +28,10 @@ This prototype does not claim verified grant coverage, eligibility decisions, ap
 
 ## Product routes
 
+The funding workspace now saves the latest 50 opportunities and drafts to owner-scoped Firestore collections. Draft saves use revision checks and retain prior revisions; a stale browser tab cannot overwrite a newer draft. Source or profile changes require another review. Eligibility is shown as met, unmet, or unknown alongside a separate strategic-fit score (not a funding probability). Company eligibility facts can be supplied in the profile. Redeploy `firestore.rules` to enable the optional `companyFacts` field.
+
+Implementation sequence and operational boundaries: [continuous funding workflow](docs/implementation-plan.md).
+
 - `/` — product overview and customer review section.
 - `/signup` and `/login` — account creation and sign-in with Firebase email/password authentication.
 - `/dashboard` — founder profile, grant discovery, match review, answer drafting, and run tracking.

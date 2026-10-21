@@ -10,11 +10,14 @@ from app.models import DiscoverGrantsRequest, DraftApplicationRequest, ExecuteAp
 from app.services.firestore import (grant_was_discovered, load_profile, load_application_run,
                                     list_application_runs, record_discovered_grants,
                                     reserve_application_run, update_application_run)
-from app.services.gemini import draft_answers, score_grant
+from app.services.gemini import draft_answers, assess_grant
+from app.services.workspace import load_opportunity, save_assessment
+from app.workspace_routes import router as workspace_router
 from app.services.tinyfish import (UpstreamServiceError, discover_and_parse_grants, get_web_agent_run,
                                    start_web_agent, validate_agent_request)
 
 app = FastAPI(title="AutoGrant AI Service", version="1.0.0")
+app.include_router(workspace_router)
 app.add_middleware(CORSMiddleware, allow_origins=settings.allowed_origins.split(","), allow_methods=["*"], allow_headers=["*"])
 
 
@@ -56,8 +59,17 @@ async def discover_grants(request: DiscoverGrantsRequest, uid: str = Depends(aut
 @app.post("/api/score-grant")
 async def score(request: ScoreGrantRequest, uid: str = Depends(authenticated_uid)):
     try:
-        value, reason = await score_grant(profile_or_firestore(request.profile, request.user_id, uid), request.grant)
-        return {"match_score": value, "match_reason": reason}
+        from app.models import Grant
+        saved = await run_in_threadpool(load_opportunity, uid, request.grant.id or "")
+        grant = Grant.model_validate(saved)
+        profile = profile_or_firestore(request.profile, request.user_id, uid)
+        assessment = await assess_grant(profile, grant)
+        await run_in_threadpool(save_assessment, uid, grant, assessment.model_dump(), profile)
+        return assessment.model_dump()
+    except LookupError as error:
+        raise HTTPException(404, str(error)) from error
+    except ValueError as error:
+        raise HTTPException(409, str(error)) from error
     except UpstreamServiceError as error:
         raise HTTPException(error.status_code, str(error)) from error
 

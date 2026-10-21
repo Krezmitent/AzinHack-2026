@@ -6,17 +6,21 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firebaseServices } from "@/lib/firebase";
-import { discoverGrants, draftApplication, executeApplication, getApplicationRun, listApplicationRuns, scoreGrant } from "@/lib/api";
+import { discoverGrants, draftApplication, executeApplication, getApplicationRun, listApplicationRuns, scoreGrant, loadWorkspace, saveDraft } from "@/lib/api";
 import type { ApplicationRun } from "@/lib/api";
-import type { Grant, StartupProfile } from "@/lib/types";
+import type { Grant, SavedDraft, StartupProfile } from "@/lib/types";
 
-const initialProfile: StartupProfile = { sector: "", location: "", revenue: "", demographics: "", pitchDeckText: "" };
+const initialProfile: StartupProfile = { sector: "", location: "", revenue: "", demographics: "", pitchDeckText: "", companyFacts: "" };
 const draftQuestions = ["Describe your startup and the problem it solves.", "How will you use this grant?"];
 const MAX_PITCH_LENGTH = 100_000;
 const MAX_PITCH_FILE_BYTES = 100_000;
 const SCORE_CONCURRENCY = 3;
 type Notice = { message: string; tone: "info" | "success" | "error" };
-type ApplicationReview = { grant: Grant; answers: Record<string, string> };
+type ApplicationReview = { grant: Grant; answers: Record<string, string>; revision: number; source_version: string; profile: StartupProfile };
+
+function sameProfile(a: StartupProfile, b: StartupProfile) {
+  return (Object.keys(initialProfile) as (keyof StartupProfile)[]).every((key) => (a[key] || "") === (b[key] || ""));
+}
 
 export default function Dashboard() {
   const router = useRouter();
@@ -26,6 +30,7 @@ export default function Dashboard() {
   const [notice, setNotice] = useState<Notice>({ message: "Start with your startup details. We’ll use them to find and rank grants.", tone: "info" });
   const [uid, setUid] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [savedDrafts, setSavedDrafts] = useState<SavedDraft[]>([]);
   const [review, setReview] = useState<ApplicationReview | null>(null);
   const [runResult, setRunResult] = useState<ApplicationRun | null>(null);
   const [recentRuns, setRecentRuns] = useState<ApplicationRun[]>([]);
@@ -42,6 +47,7 @@ export default function Dashboard() {
           setUid(null);
           setGrants([]);
           setReview(null);
+          setSavedDrafts([]);
           setRecentRuns([]);
           setAuthReady(true);
           if (!loggingOut.current) router.replace("/login");
@@ -63,7 +69,11 @@ export default function Dashboard() {
           if (active && auth.currentUser?.uid === user.uid) setNotice({ message: "Could not load recent application runs. Check the grant portal before starting another run.", tone: "error" });
         });
         try {
-          const saved = await getDoc(doc(db, "users", user.uid));
+          const [saved, workspace] = await Promise.all([getDoc(doc(db, "users", user.uid)), loadWorkspace()]);
+          if (active && auth.currentUser?.uid === user.uid) {
+            setGrants(workspace.opportunities);
+            setSavedDrafts(workspace.drafts);
+          }
           if (active && auth.currentUser?.uid === user.uid && saved.exists()) {
             const data = saved.data();
             setProfile({
@@ -71,7 +81,8 @@ export default function Dashboard() {
               location: typeof data.location === "string" ? data.location : "",
               revenue: typeof data.revenue === "string" ? data.revenue : "",
               demographics: typeof data.demographics === "string" ? data.demographics : "",
-              pitchDeckText: typeof data.pitchDeckText === "string" ? data.pitchDeckText : ""
+              pitchDeckText: typeof data.pitchDeckText === "string" ? data.pitchDeckText : "",
+              companyFacts: typeof data.companyFacts === "string" ? data.companyFacts : ""
             });
             setNotice({ message: "Your saved profile is ready. Scan for grants when you are.", tone: "success" });
           }
@@ -112,7 +123,8 @@ export default function Dashboard() {
   const profileReady = profile.sector.trim().length > 0 && profile.location.trim().length > 0 && profile.revenue.trim().length > 0 && profile.pitchDeckText.trim().length >= 20;
   const canDiscover = Boolean(uid) && authReady && profileReady;
   const profileDisabled = Boolean(busy) || !authReady;
-  const reviewNeedsWork = review && draftQuestions.some((question) => {
+  const reviewStale = review && (review.source_version !== review.grant.source_version || !sameProfile(review.profile, profile));
+  const reviewNeedsWork = review && Object.keys(review.answers).some((question) => {
     const answer = review.answers[question];
     return !answer?.trim() || answer.length > 10_000 || answer.startsWith("Information not provided;");
   });
@@ -120,10 +132,9 @@ export default function Dashboard() {
   function update(field: keyof StartupProfile, value: string) {
     setProfile((current) => ({ ...current, [field]: value }));
     if (grants.length || review) {
-      setGrants([]);
-      setReview(null);
+      setGrants((current) => current.map((grant) => ({ ...grant, match_score: undefined, match_reason: undefined, eligibility_checks: [] })));
       setRunResult(null);
-      setNotice({ message: "Your profile changed. Scan again to get matches for these details.", tone: "info" });
+      setNotice({ message: "Your profile changed. Scan again to refresh fit assessments. Saved drafts need another review.", tone: "info" });
     }
   }
 
@@ -165,7 +176,7 @@ export default function Dashboard() {
       const { db } = firebaseServices();
       await setDoc(doc(db, "users", uid), {
         sector: profile.sector.trim(), location: profile.location.trim(), revenue: profile.revenue.trim(),
-        demographics: profile.demographics.trim(), pitchDeckText: profile.pitchDeckText.trim(),
+        demographics: profile.demographics.trim(), pitchDeckText: profile.pitchDeckText.trim(), companyFacts: (profile.companyFacts || "").trim(),
         updatedAt: new Date().toISOString()
       }, { merge: true });
       setNotice({ message: "Profile saved. You’re ready to scan for grants.", tone: "success" });
@@ -216,8 +227,15 @@ export default function Dashboard() {
     if (busy) return;
     setBusy(`draft:${grant.source_url}`);
     try {
-      const { answers } = await draftApplication(grant, profile, draftQuestions);
-      setReview({ grant, answers: Object.fromEntries(draftQuestions.map((question) => [question, typeof answers?.[question] === "string" ? answers[question] : ""])) });
+      const existing = savedDrafts.find((draft) => draft.opportunity_id === grant.id);
+      if (existing) {
+        setReview({ grant, ...existing });
+      } else {
+        const { answers } = await draftApplication(grant, profile, draftQuestions);
+        const { draft } = await saveDraft(grant, profile, answers, 0);
+        setSavedDrafts((current) => [...current, draft]);
+        setReview({ grant, ...draft });
+      }
       setRunResult(null);
       setRunUncertain(false);
       setNotice({ message: `Draft ready for ${grant.title}. Review and edit the answers before starting an application run.`, tone: "info" });
@@ -227,8 +245,21 @@ export default function Dashboard() {
     } finally { setBusy(null); }
   }
 
+  async function persistDraft() {
+    if (!review || busy || reviewStale) return;
+    setBusy("save-draft");
+    try {
+      const { draft } = await saveDraft(review.grant, profile, review.answers, review.revision);
+      setSavedDrafts((current) => [...current.filter((item) => item.opportunity_id !== draft.opportunity_id), draft]);
+      setReview({ grant: review.grant, ...draft });
+      setNotice({ message: `Draft revision ${draft.revision} saved.`, tone: "success" });
+    } catch (error) {
+      setNotice({ message: error instanceof Error ? error.message : "Could not save draft.", tone: "error" });
+    } finally { setBusy(null); }
+  }
+
   async function startApplication() {
-    if (!review || reviewNeedsWork || busy || runUncertain) return;
+    if (!review || reviewNeedsWork || reviewStale || busy || runUncertain) return;
     const grant = review.grant;
     const existing = recentRuns.find((run) => run.source_url === grant.source_url && run.application_url === (grant.application_url || grant.source_url));
     if (existing) {
@@ -287,6 +318,7 @@ export default function Dashboard() {
                 <div className="field"><label htmlFor="location">Where is your startup based?</label><input id="location" required maxLength={120} disabled={profileDisabled} value={profile.location} onChange={(event) => update("location", event.target.value)} placeholder="India, Germany, Brazil…" /><span className="field-help">We search worldwide for grants open to founders in this location.</span></div>
                 <div className="field"><label htmlFor="revenue">What stage are you at?</label><input id="revenue" required maxLength={120} disabled={profileDisabled} value={profile.revenue} onChange={(event) => update("revenue", event.target.value)} placeholder="Pre-revenue, $120k ARR…" /></div>
                 <div className="field"><label htmlFor="demographics">Founder details <span className="optional">Optional</span></label><textarea id="demographics" rows={3} maxLength={2000} disabled={profileDisabled} value={profile.demographics} onChange={(event) => update("demographics", event.target.value)} placeholder="Share details relevant to grant eligibility." /></div>
+                <div className="field"><label htmlFor="company-facts">Company eligibility facts <span className="optional">Optional</span></label><textarea id="company-facts" maxLength={4000} rows={3} disabled={profileDisabled} value={profile.companyFacts || ""} onChange={(event) => update("companyFacts", event.target.value)} placeholder="Legal entity, incorporation date and country, team size, previous funding…" /><span className="field-help">Unknown facts remain unknown in eligibility checks.</span></div>
                 <div className="field"><label htmlFor="pitch">Tell us what you’re building</label><textarea id="pitch" required minLength={20} maxLength={MAX_PITCH_LENGTH} rows={7} disabled={profileDisabled} value={profile.pitchDeckText} onChange={(event) => update("pitchDeckText", event.target.value)} placeholder="Paste your plain-text pitch deck or write a short overview of your startup." /><span className="field-help">At least 20 characters. A few clear paragraphs work best.</span></div>
                 <input id="pitch-file" className="visually-hidden file-input" type="file" accept=".txt,text/plain" disabled={profileDisabled} onChange={uploadPitchDeck} /><label className="upload-control" htmlFor="pitch-file"><span aria-hidden="true">＋</span> Upload a .txt pitch deck</label>
                 <button className="save-button" type="submit" disabled={profileDisabled}>{busy === "save" ? "Saving profile…" : "Save profile"}<span aria-hidden="true">↗</span></button>
@@ -304,15 +336,19 @@ export default function Dashboard() {
                 const executing = busy === `execute:${grant.source_url}`;
                 const existingRun = recentRuns.find((run) => run.source_url === grant.source_url && run.application_url === (grant.application_url || grant.source_url));
                 return <article className="grant-card" key={grant.source_url}>
-                  <div className="grant-main"><div className="grant-score"><strong>{grant.match_score == null ? "—" : <>{grant.match_score}<span>%</span></>}</strong><small>{grant.match_score == null ? "Unscored" : "Match"}</small></div><div className="grant-copy"><h4>{grant.title}</h4><p>{grant.match_reason || (grant.match_score == null ? "Scoring is unavailable. Check eligibility at the source." : "Check the source for eligibility details.")}</p></div></div>
+                  <div className="grant-main"><div className="grant-score"><strong>{grant.match_score == null ? "—" : <>{grant.match_score}<span>/100</span></>}</strong><small>{grant.match_score == null ? "Unscored" : "Fit"}</small></div><div className="grant-copy"><h4>{grant.title}</h4><p>{grant.match_reason || (grant.match_score == null ? "Scoring is unavailable. Check eligibility at the source." : "Check the source for eligibility details.")}</p></div></div>
                   <div className="grant-criteria"><span>Eligibility notes</span><p>{grant.eligibility_criteria.slice(0, 3).join(" / ") || "Review the source page for criteria."}</p></div>
-                  <div className="grant-actions"><a href={grant.application_url || grant.source_url} target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a><button type="button" onClick={() => prepareDraft(grant)} disabled={Boolean(busy)}>{drafting ? "Drafting…" : "Draft answers"}</button></div>
+                  {grant.checked_at && <p className="field-help">Source retrieved {new Date(grant.checked_at).toLocaleString()}. Fit is not a funding probability.</p>}
+                  {!!grant.eligibility_checks?.length && <details className="grant-criteria"><summary>Eligibility checklist</summary>{grant.eligibility_checks.map((check, index) => <p key={index}><strong>{check.status}: {check.criterion}</strong><br />{check.reason}</p>)}</details>}
+                  <div className="grant-actions"><a href={grant.application_url || grant.source_url} target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a><button type="button" onClick={() => prepareDraft(grant)} disabled={Boolean(busy)}>{drafting ? "Opening…" : savedDrafts.some((item) => item.opportunity_id === grant.id) ? "Open saved draft" : "Draft answers"}</button></div>
                   {isReviewing && review && <div className="review-panel" id="application-review"><div className="review-heading"><div><h5>Review your draft</h5><p>Check every answer against the grant’s actual form. Starting a run may submit this application to the provider.</p></div><span className="review-badge">Your call</span></div>
                     {Object.entries(review.answers).map(([question, answer]) => <div className="field review-field" key={question}><label htmlFor={`answer-${question}`}>{question}</label><textarea id={`answer-${question}`} rows={5} maxLength={10_000} disabled={Boolean(busy)} value={answer} onChange={(event) => setReview((current) => current ? { ...current, answers: { ...current.answers, [question]: event.target.value } } : null)} /></div>)}
+                    <p className="field-help">Saved revision {review.revision}. Save edits before leaving this page.</p>
+                    {reviewStale && <div className="review-warning"><p>Your profile or the source changed since this draft was saved. Review all answers against the current details.</p><button type="button" disabled={Boolean(busy)} onClick={() => setReview({ ...review, source_version: grant.source_version || "", profile: { ...profile } })}>I reviewed the current details</button></div>}
                     <p className="field-help">This run cannot sign into a grant portal. If the provider requires login, open its portal yourself.</p>
                     {reviewNeedsWork && <p className="review-warning">Complete missing answers and keep each answer under 10,000 characters before starting the run.</p>}
                     {runResult && <p className={runResult.status === "not_submitted" || runResult.status === "unknown" ? "review-warning" : "field-help"} role="status">{runResult.message || "Submission status is unknown."}{runResult.evidence ? ` Evidence: ${runResult.evidence}` : ""}</p>}
-                    <div className="review-actions"><button type="button" className="review-cancel" onClick={() => setReview(null)} disabled={Boolean(busy)}>Close draft</button><button type="button" className="review-submit" onClick={startApplication} disabled={Boolean(reviewNeedsWork) || Boolean(busy) || Boolean(existingRun) || runUncertain}>{executing ? "Starting run…" : existingRun ? "Run already started" : "Start application run"}</button></div>
+                    <div className="review-actions"><button type="button" className="review-cancel" onClick={() => setReview(null)} disabled={Boolean(busy)}>Close draft</button><button type="button" className="review-cancel" onClick={persistDraft} disabled={Boolean(busy) || Boolean(reviewStale) || Boolean(reviewNeedsWork)}>Save draft</button><button type="button" className="review-submit" onClick={startApplication} disabled={Boolean(reviewNeedsWork) || Boolean(reviewStale) || Boolean(busy) || Boolean(existingRun) || runUncertain}>{executing ? "Starting run…" : existingRun ? "Run already started" : "Start application run"}</button></div>
                   </div>}
                 </article>;
               })}</div></> : <div className="empty-state"><div className="empty-illustration" aria-hidden="true"><div className="empty-sheet"><span /><span /><span /></div><div className="empty-lens">✳</div></div><h4>Your shortlist starts here.</h4><p>Tell us about your startup, then scan to see grants worth a closer look.</p></div>}

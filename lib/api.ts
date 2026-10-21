@@ -1,4 +1,4 @@
-import type { Grant, StartupProfile } from "./types";
+import type { Grant, SavedDraft, StartupProfile } from "./types";
 import { firebaseServices } from "./firebase";
 
 export type ApplicationRun = {
@@ -60,7 +60,7 @@ async function request<T>(path: string, body?: unknown, method: "GET" | "POST" =
 
 export const discoverGrants = (location: string, sector: string) => request<{ grants: Grant[] }>("/api/discover", { location, sector });
 export const scoreGrant = (grant: Grant, profile: StartupProfile) =>
-  request<Pick<Grant, "match_score" | "match_reason">>("/api/score", { grant, profile });
+  request<Pick<Grant, "match_score" | "match_reason" | "eligibility_checks">>("/api/score", { grant, profile });
 export const draftApplication = (grant: Grant, profile: StartupProfile, questions: string[]) =>
   request<{ answers: Record<string, string> }>("/api/draft", { grant, profile, questions });
 export const executeApplication = (grant: Grant, answers: Record<string, string>, vaultCredentialLabels: string[]) =>
@@ -71,6 +71,11 @@ export const executeApplication = (grant: Grant, answers: Record<string, string>
     confirm_submit: true
   });
 export const listApplicationRuns = () => request<{ runs: ApplicationRun[] }>("/api/application-runs", undefined, "GET");
+export const loadWorkspace = () => request<{ opportunities: Grant[]; drafts: SavedDraft[] }>("/api/workspace", undefined, "GET");
+export const saveDraft = (grant: Grant, profile: StartupProfile, answers: Record<string, string>, revision: number) =>
+  request<{ draft: SavedDraft }>(`/api/workspace/drafts/${grant.id}`, {
+    profile, answers, expected_revision: revision, source_version: grant.source_version
+  });
 export const getApplicationRun = (id: string) => {
   if (!/^[a-f0-9]{64}$/.test(id)) throw new Error("Invalid application run ID.");
   return request<{ run: ApplicationRun }>(`/api/application-runs/${id}`, undefined, "GET");
