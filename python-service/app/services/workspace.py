@@ -44,7 +44,7 @@ def save_opportunities(uid: str, grants: list[Grant]) -> None:
     for grant in grants:
         grant.id = opportunity_id(grant.source_url)
         grant.checked_at = grant.checked_at or now_iso()
-        grant.source_version = fingerprint(grant.model_dump(include={"title", "application_url", "eligibility_criteria", "clean_markdown"}))
+        grant.source_version = fingerprint(grant.model_dump(include={"title", "application_url", "eligibility_criteria", "clean_markdown", "inspection"}))
         # Re-discovery replaces stale assessments but never rewrites a saved draft.
         batch.set(collection(uid, "opportunities").document(grant.id), grant.model_dump())
     if grants:
@@ -72,7 +72,8 @@ def list_workspace(uid: str) -> dict:
         if opportunity.get("assessment_profile") != profile_version:
             opportunity.update(match_score=None, match_reason=None, eligibility_checks=[])
     drafts = [doc.to_dict() for doc in collection(uid, "drafts").order_by("updated_at", direction=firestore.Query.DESCENDING).limit(50).stream()]
-    return {"opportunities": opportunities, "drafts": drafts}
+    inspections = [doc.to_dict() for doc in collection(uid, "inspections").order_by("updated_at", direction=firestore.Query.DESCENDING).limit(50).stream()]
+    return {"opportunities": opportunities, "drafts": drafts, "inspections": inspections}
 
 
 def next_draft(current: dict | None, request: dict, grant: dict) -> dict:

@@ -27,3 +27,12 @@ services:
     expose:
       - "8000"
     restart: unless-stopped
+
+  worker:
+    image: ${API_IMAGE:?Set API_IMAGE to the published API image}
+    env_file:
+      - ./python-service/.env
+    command: ["python", "-m", "app.worker", "--loop"]
+    healthcheck:
+      disable: true
+    restart: unless-stopped

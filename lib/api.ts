@@ -1,4 +1,4 @@
-import type { Grant, SavedDraft, StartupProfile } from "./types";
+import type { Grant, InspectionRun, SavedDraft, StartupProfile } from "./types";
 import { firebaseServices } from "./firebase";
 
 export type ApplicationRun = {
@@ -63,15 +63,18 @@ export const scoreGrant = (grant: Grant, profile: StartupProfile) =>
   request<Pick<Grant, "match_score" | "match_reason" | "eligibility_checks">>("/api/score", { grant, profile });
 export const draftApplication = (grant: Grant, profile: StartupProfile, questions: string[]) =>
   request<{ answers: Record<string, string> }>("/api/draft", { grant, profile, questions });
-export const executeApplication = (grant: Grant, answers: Record<string, string>, vaultCredentialLabels: string[]) =>
+export const executeApplication = (grant: Grant, answers: Record<string, string>, vaultCredentialLabels: string[], revision: number) =>
   request<{ run: ApplicationRun }>("/api/execute", {
     grant,
     drafted_answers: answers,
     vault_credential_labels: vaultCredentialLabels,
-    confirm_submit: true
+    confirm_submit: true,
+    draft_revision: revision
   });
 export const listApplicationRuns = () => request<{ runs: ApplicationRun[] }>("/api/application-runs", undefined, "GET");
-export const loadWorkspace = () => request<{ opportunities: Grant[]; drafts: SavedDraft[] }>("/api/workspace", undefined, "GET");
+export const loadWorkspace = () => request<{ opportunities: Grant[]; drafts: SavedDraft[]; inspections: InspectionRun[] }>("/api/workspace", undefined, "GET");
+export const startInspection = (grant: Grant) => request<{ inspection: InspectionRun }>(`/api/workspace/inspections/${grant.id}`, { source_version: grant.source_version });
+export const getInspection = (id: string) => request<{ inspection: InspectionRun; grant: Grant }>(`/api/workspace/inspections/${id}`, undefined, "GET");
 export const saveDraft = (grant: Grant, profile: StartupProfile, answers: Record<string, string>, revision: number) =>
   request<{ draft: SavedDraft }>(`/api/workspace/drafts/${grant.id}`, {
     profile, answers, expected_revision: revision, source_version: grant.source_version

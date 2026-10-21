@@ -54,9 +54,16 @@ class Collection:
         self.count = count
         return self
 
+    def where(self, *, filter):
+        self.field_filter = filter
+        return self
+
     def stream(self):
         values = [Snapshot(Reference(self.db, key)) for key in self.db.data
                   if key.startswith(self.path + "/") and key.count("/") == self.path.count("/") + 1]
+        field_filter = getattr(self, "field_filter", None)
+        if field_filter:
+            values = [item for item in values if item.value.get(field_filter.field_path) == field_filter.value]
         if self.order:
             values.sort(key=lambda item: item.value.get(self.order, ""), reverse=True)
         return values[:self.count]
