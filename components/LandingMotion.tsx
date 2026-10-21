@@ -34,13 +34,16 @@ export default function LandingMotion() {
       const hero = root.querySelector<HTMLElement>(".modern-hero");
       const ribbonGroups = Array.from(root.querySelectorAll<HTMLElement>(".modern-hero__ribbons"));
       const final = root.querySelector<HTMLElement>(".modern-final");
-      const finalBands = Array.from(root.querySelectorAll<HTMLElement>(".modern-final__bands i"));
       const signature = root.querySelector<HTMLElement>(".site-footer-signature");
+      const workflow = root.querySelector<HTMLElement>(".modern-workflow");
+      const routeLines = root.querySelector<SVGElement>(".modern-route-lines");
+      const tiles = root.querySelector<HTMLElement>(".modern-tiles");
+      const manifesto = root.querySelector<HTMLElement>(".modern-manifesto");
+      const burst = root.querySelector<HTMLElement>(".modern-final__burst");
       let frame = 0;
       let lastTime = 0;
       let scrollDirty = true;
       let heroScroll = 0;
-      let finalScroll = 0;
       let heroX = 0;
       let heroY = 0;
 
@@ -75,6 +78,10 @@ export default function LandingMotion() {
 
       if (hero) addPointerSurface(hero, (x, y) => { heroX = x; heroY = y; });
 
+      if (workflow && routeLines) addPointerSurface(workflow, (x, y) => {
+        routeLines.style.transform = `translate3d(${x * 7}px, ${y * 5}px, 0)`;
+      });
+
       root.querySelectorAll<HTMLElement>(".modern-feature__visual, .journey__visual, .modern-control__visual").forEach((scope) => {
         const sheet = scope.querySelector<HTMLElement>(".modern-feature__paper, .journey__document, .modern-review");
         const prompt = scope.querySelector<HTMLElement>(".modern-feature__prompt, .journey__prompt");
@@ -89,15 +96,15 @@ export default function LandingMotion() {
         transform(signatureLogo, `perspective(1400px) rotateX(${-y}deg) rotateY(${x * 1.5}deg)`);
       });
 
+      if (final && burst) addPointerSurface(final, (x, y) => {
+        burst.style.setProperty("--burst-x", `${x * 8}px`);
+        burst.style.setProperty("--burst-y", `${y * 5}px`);
+      });
+
       function readScroll() {
-        const viewport = window.innerHeight;
         if (hero) {
           const bounds = hero.getBoundingClientRect();
           heroScroll = clamp(-bounds.top / bounds.height, 0, 1);
-        }
-        if (final) {
-          const bounds = final.getBoundingClientRect();
-          finalScroll = clamp((viewport - bounds.top) / (viewport + bounds.height), 0, 1);
         }
         scrollDirty = false;
       }
@@ -130,11 +137,6 @@ export default function LandingMotion() {
             transform(child, `translate3d(${heroX * depth - heroScroll * (18 + depth)}px, ${heroY * depth - heroScroll * 12}px, 0)`);
           });
         }
-        finalBands.forEach((band, index) => {
-          const direction = index % 2 === 0 ? 1 : -1;
-          transform(band, `translate3d(${(1 - finalScroll) * direction * (25 + index * 10)}px, 0, 0) scaleX(${0.82 + finalScroll * 0.18})`);
-        });
-
         lastTime = moving ? time : 0;
         if (moving) requestFrame();
       }
@@ -152,11 +154,18 @@ export default function LandingMotion() {
       const revealObserver = new IntersectionObserver((entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
-          entry.target.setAttribute("data-brand-visible", "");
+          const target = entry.target as HTMLElement;
+          if (target === signature) target.setAttribute("data-brand-visible", "");
+          else if (target === tiles) target.setAttribute("data-tiles-visible", "");
+          else if (target === manifesto) target.setAttribute("data-manifesto-visible", "");
+          else if (target === burst) target.setAttribute("data-burst-visible", "");
           revealObserver.unobserve(entry.target);
         }
       }, { threshold: 0.15 });
       if (signature) revealObserver.observe(signature);
+      if (tiles) revealObserver.observe(tiles);
+      if (manifesto) revealObserver.observe(manifesto);
+      if (burst) revealObserver.observe(burst);
 
       root.setAttribute("data-motion-ready", "");
       requestFrame();
@@ -167,6 +176,12 @@ export default function LandingMotion() {
         revealObserver.disconnect();
         root.removeAttribute("data-motion-ready");
         signature?.removeAttribute("data-brand-visible");
+        tiles?.removeAttribute("data-tiles-visible");
+        manifesto?.removeAttribute("data-manifesto-visible");
+        burst?.removeAttribute("data-burst-visible");
+        routeLines?.style.removeProperty("transform");
+        burst?.style.removeProperty("--burst-x");
+        burst?.style.removeProperty("--burst-y");
         transformed.forEach((element) => element.style.removeProperty("transform"));
       };
     }

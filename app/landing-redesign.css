@@ -133,3 +133,114 @@
 @media (max-width: 820px) { .modern-hero__ribbons { width: 44px; opacity: .7; top: 185px; } .modern-hero__ribbons i { height: 11px; } .modern-home .modern-hero h1 { font-size: clamp(50px, 7.8vw, 65px); } .modern-hero__intro { max-width: 530px; padding: 0 10px; font-size: 18px; } .journey__stage { grid-template-columns: 1fr; gap: 35px; padding: 38px; } .journey__copy { max-width: 590px; } .journey__visual { width: 100%; max-width: 540px; justify-self: center; } .journey__sample { margin-top: 14px; } .modern-feature-grid { grid-template-columns: 1fr; gap: 45px; } .modern-feature { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 0 30px; } .modern-feature__visual { grid-row: span 2; min-height: 235px; } .modern-home .modern-feature h3 { align-self: end; margin: 0 0 13px; font-size: 29px; } .modern-feature > p { align-self: start; } .modern-home .modern-control { grid-template-columns: 1fr; gap: 45px; } .modern-home .modern-control h2 br { display: none; } .modern-control__copy > p:not(.modern-section-label) { max-width: 600px; } .modern-control__visual { max-width: 650px; width: 100%; justify-self: center; } }
 @media (max-width: 600px) { .modern-home .modern-hero { padding-top: 54px; } .modern-hero__badge { max-width: 100%; margin-bottom: 24px; padding: 7px 11px; font-size: 10px; } .modern-home .modern-hero h1 { font-size: clamp(41px, 10.5vw, 61px); letter-spacing: -.058em; line-height: 1.03; } .modern-hero__ribbons { display: none; } .modern-hero__intro { margin-top: 22px; padding: 0; font-size: 17px; line-height: 1.5; } .modern-actions { gap: 5px; margin-top: 28px; } .modern-home .modern-button { min-height: 48px; gap: 13px; padding: 12px 14px; font-size: 11px; } .modern-hero__note { max-width: 270px; margin: 17px auto 0; font-size: 10px; line-height: 1.5; } .modern-hero__path { gap: 10px; margin-top: 42px; padding-bottom: 25px; font-size: 10px; } .modern-hero__path i { width: 24px; height: 3px; } .modern-home .modern-workflow { padding-top: 55px; } .modern-home .modern-section-heading h2 { font-size: clamp(34px, 9vw, 48px); } .modern-section-heading > p:last-child { font-size: 14px; } .journey { margin-top: 32px; } .journey__nav { width: 100%; gap: 2px; padding: 4px; border-radius: 10px; } .journey__nav button { justify-content: center; min-width: 0; flex: 1; gap: 7px; min-height: 44px; padding: 9px 7px; font-size: 11px; } .journey__nav-arrow { display: none; } .journey__step-dot { width: 6px; height: 6px; } .journey__stage { gap: 33px; min-height: 0; padding: 28px 20px; border-radius: 17px; } .journey__icon { margin-bottom: 19px; } .modern-home .journey__copy h3 { font-size: 32px; } .journey__copy > p { margin-top: 16px; font-size: 13px; } .journey__prompt { gap: 8px; padding: 11px 12px; font-size: 10px; } .journey__document { padding: 30px 17px 17px; border-radius: 12px; } .journey__document-title strong { font-size: 11px; } .journey__document-title div > span { font-size: 9px; } .journey__row { gap: 12px; font-size: 10px; } .journey__row strong { font-size: 10px; } .modern-home .modern-capabilities h2 { font-size: 40px; } .modern-capabilities__heading h2 br { display: none; } .modern-feature-grid { margin-top: 40px; gap: 37px; } .modern-feature { display: block; } .modern-feature__visual { min-height: 235px; padding: 25px; } .modern-home .modern-feature h3 { margin-top: 23px; margin-bottom: 11px; font-size: 28px; } .modern-feature > p { max-width: none; font-size: 14px; } .modern-home .modern-control h2 { font-size: 48px; } .modern-control__visual { padding: 25px 17px; border-radius: 17px; } .modern-review { padding: 20px; } .modern-review__top > b { font-size: 7px; padding: 4px; } .modern-home .modern-review h3 { font-size: 25px; } .modern-control__caption { font-size: 9px; } .modern-reviews__grid { grid-template-columns: 1fr; } .modern-final { padding-top: 15px; padding-bottom: 65px; } .modern-home .modern-final h2 { font-size: clamp(43px, 11.2vw, 63px); margin-bottom: 28px; } .modern-final__bands { inset: 70px 0 auto; gap: 4px; } .modern-final__bands i { height: 12px; } }
 @media (prefers-reduced-motion: reduce) { .modern-home *, .modern-home *::before, .modern-home *::after { scroll-behavior: auto !important; transition: none !important; } }
+
+/* A flowing route ties the three steps together without competing with the demo. */
+.modern-workflow { position: relative; isolation: isolate; }
+.modern-route-lines { position: absolute; z-index: -1; left: 0; top: 180px; width: 100%; height: min(50vw, 560px); min-height: 370px; max-height: 560px; opacity: .29; pointer-events: none; will-change: transform; }
+.modern-route-lines path { stroke: #E8512B; stroke-width: 2; stroke-dasharray: 11 18; animation: route-flow 4s linear infinite; }
+.modern-route-lines path:nth-child(2) { stroke: #A96AE5; animation-delay: -.8s; }
+.modern-route-lines path:nth-child(3) { stroke: #399DE0; animation-delay: -1.6s; }
+.modern-route-lines path:nth-child(4) { stroke: #FFBC57; animation-delay: -2.4s; }
+@keyframes route-flow { to { stroke-dashoffset: -116px; } }
+
+.modern-home .modern-button { position: relative; overflow: hidden; border-radius: 999px; }
+.modern-home .modern-button:focus-visible { outline: 3px solid var(--route-blue); outline-offset: 4px; }
+.modern-home .modern-button > span { transition: transform 240ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .modern-home .modern-button:hover { transform: translateY(-3px) scale(1.025); box-shadow: 0 7px 0 #30251A14, 0 13px 22px #30251A18, inset 0 1px 0 #FFFFFF80; }
+  .modern-home .modern-button:active { transform: translateY(1px) scale(.985); box-shadow: inset 0 2px 5px #30251A24; }
+  .modern-home .modern-button:hover > span { transform: translate3d(4px, -2px, 0) rotate(5deg); }
+}
+
+.modern-manifesto { position: relative; overflow: hidden; padding: clamp(92px, 12vw, 175px) 24px clamp(100px, 12vw, 165px); background: #EAE5DF; text-align: center; }
+.modern-manifesto__inner { position: relative; }
+.modern-manifesto__inner > p { margin: 0 0 28px; color: #746B64; font-size: 11px; font-weight: 700; letter-spacing: .13em; }
+.modern-home .modern-manifesto h2 { margin: 0; font-size: clamp(58px, 9vw, 128px); letter-spacing: -.075em; line-height: .96; text-wrap: balance; }
+.modern-manifesto h2 span { display: inline-block; color: #D9512F; }
+.modern-manifesto__route { display: flex; width: min(550px, 70%); height: 5px; margin: 41px auto 0; gap: 4px; overflow: hidden; border-radius: 8px; }
+.modern-manifesto__route i { flex: 1; background: #D9512F; }
+.modern-manifesto__route i:nth-child(2) { background: #A96AE5; }
+.modern-manifesto__route i:nth-child(3) { background: #399DE0; }
+.modern-manifesto__route i:nth-child(4) { background: #FFBC57; }
+.modern-manifesto__route i:nth-child(5) { background: #D9D3CC; }
+.modern-home[data-motion-ready] .modern-manifesto h2 span,
+.modern-home[data-motion-ready] .modern-manifesto__route { opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity 650ms var(--ease-out), transform 650ms var(--ease-out); }
+.modern-home[data-motion-ready] .modern-manifesto[data-manifesto-visible] h2 span,
+.modern-home[data-motion-ready] .modern-manifesto[data-manifesto-visible] .modern-manifesto__route { opacity: 1; transform: translate3d(0, 0, 0); }
+
+.modern-home .modern-tiles { display: grid; grid-template-columns: minmax(0, .78fr) minmax(500px, 1.22fr); align-items: center; gap: clamp(55px, 9vw, 135px); padding-top: clamp(100px, 12vw, 170px); padding-bottom: clamp(100px, 12vw, 170px); }
+.modern-tiles__copy h2 { max-width: 530px; margin: 0; font-size: clamp(43px, 5.4vw, 74px); letter-spacing: -.06em; line-height: 1.02; }
+.modern-tiles__copy > p:last-child { max-width: 450px; margin: 24px 0 0; color: #746B64; font-size: 15px; line-height: 1.7; }
+.modern-tiles__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; perspective: 1000px; }
+.modern-tile { --tile-bg: #F0EAE4; --tile-ink: #211C18; display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; aspect-ratio: 1 / .92; padding: clamp(12px, 1.4vw, 20px); overflow: hidden; border: 1px solid #FFFFFFB8; border-radius: clamp(12px, 1.4vw, 20px); background: var(--tile-bg); box-shadow: 0 2px 3px #281C1010, inset 0 1px 0 #FFFFFFA0; color: var(--tile-ink); }
+.modern-tile__icon { display: grid; place-items: center; width: clamp(34px, 4.4vw, 54px); height: clamp(34px, 4.4vw, 54px); margin-bottom: auto; border: 1px solid #1D181218; border-radius: 13px; background: #FFFFFFB8; font-size: clamp(17px, 2vw, 24px); font-weight: 600; }
+.modern-tile strong { overflow-wrap: anywhere; font-size: clamp(11px, 1.2vw, 15px); font-weight: 700; letter-spacing: -.025em; }
+.modern-tile small { margin-top: 4px; color: #746B64; font-size: clamp(9px, .95vw, 11px); line-height: 1.35; }
+.modern-tile--profile { --tile-bg: #D7E3D3; }
+.modern-tile--sector { --tile-bg: #EAE2F0; }
+.modern-tile--location { --tile-bg: #E0EAF0; }
+.modern-tile--grants { --tile-bg: #F7D7C6; }
+.modern-tile--fit { --tile-bg: #FFE8BB; }
+.modern-tile--eligibility { --tile-bg: #EAE5DF; }
+.modern-tile--sources { --tile-bg: #D9E8EA; }
+.modern-tile--form { --tile-bg: #EEE0D0; }
+.modern-tile--draft { --tile-bg: #E4D9EF; }
+.modern-home[data-motion-ready] .modern-tile { opacity: 0; transform: translate3d(0, -52px, 0) rotate(var(--tile-tilt, 0deg)); }
+.modern-home[data-motion-ready] .modern-tiles[data-tiles-visible] .modern-tile { animation: tile-drop 720ms var(--ease-out) both; animation-delay: var(--tile-delay, 0ms); }
+.modern-tile:nth-child(3n + 1) { --tile-tilt: -3deg; --tile-delay: 0ms; }
+.modern-tile:nth-child(3n + 2) { --tile-tilt: 2deg; --tile-delay: 70ms; }
+.modern-tile:nth-child(3n) { --tile-tilt: -1deg; --tile-delay: 140ms; }
+@keyframes tile-drop { 0% { opacity: 0; transform: translate3d(0, -52px, 0) rotate(var(--tile-tilt)); } 68% { opacity: 1; transform: translate3d(0, 6px, 0) rotate(calc(var(--tile-tilt) * -.35)); } 100% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg); } }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .modern-tiles[data-tiles-visible] .modern-tile { transition: transform 280ms var(--ease-out), box-shadow 280ms ease; }
+  .modern-tiles[data-tiles-visible] .modern-tile:hover { transform: translate3d(0, -5px, 0) rotate(0deg); box-shadow: 0 12px 24px #281C1018, inset 0 1px 0 #FFFFFFA0; }
+}
+
+.modern-home .modern-final { position: relative; isolation: isolate; min-height: clamp(490px, 53vw, 690px); margin-bottom: clamp(55px, 8vw, 110px); padding: clamp(55px, 7vw, 92px) 20px 0; overflow: hidden; border: 1px solid #E3D9CF; border-radius: clamp(24px, 4vw, 46px); background: #F0EAE4; text-align: center; }
+.modern-home .modern-final h2 { position: relative; z-index: 2; margin: 0; font-size: clamp(48px, 7.5vw, 104px); }
+.modern-final__burst { position: absolute; z-index: 0; left: 50%; bottom: -235px; width: min(124%, 1460px); height: 470px; pointer-events: none; }
+.modern-final__burst i { --burst-scale: 1; position: absolute; left: 50%; bottom: 0; display: block; width: 118%; height: 100%; border-radius: 50% 50% 0 0 / 70% 70% 0 0; background: #DDD8D3; transform: translate3d(calc(-50% + var(--burst-x, 0px)), var(--burst-y, 0px), 0) scale(var(--burst-scale)); transition: transform 600ms var(--ease-out), opacity 450ms ease; }
+.modern-final__burst i:nth-child(2) { width: 102%; background: #A96AE5; }
+.modern-final__burst i:nth-child(3) { width: 84%; background: #399DE0; }
+.modern-final__burst i:nth-child(4) { width: 66%; background: #FFBC57; }
+.modern-final__burst i:nth-child(5) { width: 48%; background: #F16A43; }
+.modern-final__cta { position: absolute; z-index: 3; left: 50%; bottom: 86px; transform: translateX(-50%); }
+.modern-home .modern-button--explosive { min-width: 230px; min-height: 78px; padding: 20px 29px; border: 1px solid #D9D3CC; background: #FFFEFC; box-shadow: 0 6px 0 #211C1820, 0 15px 35px #211C1826, inset 0 1px 0 #FFFFFF; font-size: 18px; }
+.modern-home .modern-button--explosive:hover { background: #FFF; }
+.modern-home[data-motion-ready] .modern-final__burst i { opacity: .2; --burst-scale: .82; }
+.modern-home[data-motion-ready] .modern-final[data-burst-visible] .modern-final__burst i { opacity: 1; --burst-scale: 1; }
+
+@media (max-width: 900px) {
+  .modern-home .modern-tiles { grid-template-columns: 1fr; gap: 45px; }
+  .modern-tiles__copy h2 { max-width: 650px; }
+  .modern-tiles__copy > p:last-child { max-width: 600px; }
+  .modern-tiles__grid { width: min(100%, 650px); justify-self: center; }
+}
+@media (max-width: 600px) {
+  .modern-route-lines { top: 140px; width: 100%; height: 560px; min-height: 0; opacity: .19; }
+  .modern-home .modern-button { border-radius: 999px; }
+  .modern-home .modern-manifesto { padding: 88px 20px 92px; }
+  .modern-manifesto__inner > p { max-width: 255px; margin-inline: auto; font-size: 9px; line-height: 1.5; }
+  .modern-home .modern-manifesto h2 { font-size: clamp(45px, 11.6vw, 68px); }
+  .modern-manifesto__route { width: 88%; margin-top: 31px; }
+  .modern-home .modern-tiles { gap: 34px; padding-top: 82px; padding-bottom: 82px; }
+  .modern-tiles__copy h2 { font-size: 42px; }
+  .modern-tiles__copy > p:last-child { font-size: 14px; }
+  .modern-tiles__grid { gap: 6px; }
+  .modern-tile { min-height: 105px; padding: 10px; border-radius: 12px; }
+  .modern-tile__icon { width: 31px; height: 31px; margin-bottom: 12px; border-radius: 9px; font-size: 15px; }
+  .modern-tile strong { font-size: 10px; }
+  .modern-tile small { font-size: 8px; }
+  .modern-home .modern-final { min-height: 455px; margin-bottom: 55px; padding-top: 47px; border-radius: 24px; }
+  .modern-home .modern-final h2 { font-size: clamp(43px, 11.3vw, 64px); }
+  .modern-final__burst { bottom: -242px; width: 185%; height: 400px; }
+  .modern-final__cta { bottom: 70px; }
+  .modern-home .modern-button--explosive { min-width: 205px; min-height: 67px; font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .modern-route-lines path { animation: none; stroke-dasharray: none; }
+  .modern-home[data-motion-ready] .modern-manifesto h2 span,
+  .modern-home[data-motion-ready] .modern-manifesto__route { opacity: 1; transform: none; }
+  .modern-home[data-motion-ready] .modern-tile { opacity: 1; transform: none; }
+  .modern-home[data-motion-ready] .modern-final__burst i { opacity: 1; --burst-scale: 1; }
+}
