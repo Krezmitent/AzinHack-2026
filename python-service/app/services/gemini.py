@@ -25,7 +25,7 @@ async def _generate(prompt: str) -> str:
 
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.35, "responseMimeType": "application/json"},
+        "generationConfig": {"responseMimeType": "application/json"},
     }
     headers = {"x-goog-api-key": settings.gemini_api_key}
     async with httpx.AsyncClient(timeout=30.0) as client:
