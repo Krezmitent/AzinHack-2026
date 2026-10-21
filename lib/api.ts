@@ -1,4 +1,4 @@
-import type { Grant, InspectionRun, SavedDraft, StartupProfile } from "./types";
+import type { FundingRadarData, FundingWatch, Grant, InspectionRun, SavedDraft, StartupProfile, TrackedApplication } from "./types";
 import { firebaseServices } from "./firebase";
 
 export type ApplicationRun = {
@@ -83,3 +83,12 @@ export const getApplicationRun = (id: string) => {
   if (!/^[a-f0-9]{64}$/.test(id)) throw new Error("Invalid application run ID.");
   return request<{ run: ApplicationRun }>(`/api/application-runs/${id}`, undefined, "GET");
 };
+export const loadFundingRadar = () => request<FundingRadarData>("/api/workspace/radar", undefined, "GET");
+export const loadSavedOpportunity = (id: string) => request<{ grant: Grant }>(`/api/workspace/opportunities/${id}`, undefined, "GET");
+export const createFundingWatch = (body: { type: "fetch" | "search"; opportunity_id?: string; query?: string; cadence: "daily" | "six_hourly"; timezone: string }) =>
+  request<{ watch: FundingWatch }>("/api/workspace/watches", body);
+export const controlFundingWatch = (id: string, action: "pause" | "resume" | "delete" | "check" | "sync") =>
+  request<{ watch: FundingWatch }>(`/api/workspace/watches/${id}`, { action });
+export const markFundingEventRead = (id: string) => request<{ read: boolean }>(`/api/workspace/events/${id}/read`, {});
+export const updateTrackedApplication = (id: string, body: { status: TrackedApplication["status"]; note: string; expected_revision: number; timezone: string }) =>
+  request<{ application: TrackedApplication }>(`/api/workspace/applications/${id}`, body);

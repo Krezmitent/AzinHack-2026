@@ -324,3 +324,22 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .topbar-logout { font-size: 10px; }
   .connection-status { font-size: 9px; }
 }
+
+/* Funding monitoring and application tracking */
+.funding-radar { grid-column: 1 / -1; display: grid; gap: 22px; }
+.funding-radar h4 { margin: 0 0 12px; font-family: "Syne", sans-serif; font-size: 18px; letter-spacing: -.04em; }
+.funding-radar .matches-heading { margin-bottom: 0; }
+.funding-radar .matches-heading select, .funding-radar select, .funding-radar input { margin-left: 6px; padding: 8px 10px; border: 1px solid #d8dbe9; border-radius: 5px; background: white; color: var(--ink); }
+.radar-opportunities, .radar-columns > div { display: grid; align-content: start; gap: 10px; }
+.radar-row, .radar-event { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 15px; border: 1px solid #e3e5ef; border-radius: 7px; background: white; }
+.radar-row > div:first-child, .radar-event > div:first-child { min-width: 0; }
+.radar-row strong, .radar-event strong { font-size: 12px; }
+.radar-row p, .radar-event p { margin: 5px 0 0; color: #717790; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.radar-row .grant-actions { flex: none; }
+.radar-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }
+.radar-event { align-items: flex-start; }
+.radar-event small { display: block; margin-top: 8px; color: #858ba0; font-size: 10px; }
+.radar-event a { display: inline-block; margin-top: 8px; color: var(--blue); font-size: 11px; font-weight: 800; }
+.radar-event.is-read { opacity: .72; }
+.radar-event button, .radar-row > button { flex: none; border: 0; background: transparent; color: var(--blue); font-size: 11px; font-weight: 800; }
+@media (max-width: 760px) { .radar-columns { grid-template-columns: 1fr; } .radar-row { align-items: flex-start; flex-direction: column; } .radar-row .grant-actions { flex-wrap: wrap; } .funding-radar .matches-heading { display: grid; gap: 16px; } }

@@ -60,6 +60,7 @@ def grant_was_discovered(user_id: str, grant: Grant) -> bool:
 
 
 def reserve_application_run(user_id: str, grant: Grant) -> tuple[dict, bool]:
+    from app.services.work_queue import enqueue
     record_id = _run_id(grant)
     reference = _run_collection(user_id).document(record_id)
     now = datetime.now(timezone.utc).isoformat()
@@ -69,15 +70,22 @@ def reserve_application_run(user_id: str, grant: Grant) -> tuple[dict, bool]:
         "status": "starting", "message": "Preparing the application run. No submission is confirmed.",
         "provider_status": None, "run_id": None, "evidence": None,
         "created_at": now, "updated_at": now,
+        "opportunity_id": grant.id,
     }
-    try:
-        reference.create(record)
+    transaction = get_firestore_client().transaction()
+
+    @firestore.transactional
+    def reserve(transaction):
+        snapshot = reference.get(transaction=transaction)
+        if snapshot.exists:
+            current = snapshot.to_dict()
+            if current["status"] in ("starting", "pending"):
+                enqueue(transaction, user_id, record_id, "application_run")
+            return current, False
+        transaction.set(reference, record)
+        enqueue(transaction, user_id, record_id, "application_run")
         return record, True
-    except Conflict:
-        snapshot = reference.get()
-        if not snapshot.exists:
-            raise RuntimeError("Run reservation could not be read. Check the provider before retrying.")
-        return snapshot.to_dict(), False
+    return reserve(transaction)
 
 
 def update_application_run(user_id: str, record_id: str, changes: dict) -> dict:
