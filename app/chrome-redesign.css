@@ -125,6 +125,51 @@
   font-size: 12px;
 }
 
+/* The closing signature remains a complete, readable logo without JavaScript. */
+.site-footer-signature {
+  margin-top: 12px;
+  padding-block: clamp(45px, 7vw, 110px);
+  overflow: clip;
+  background: var(--ink);
+}
+.site-footer-signature-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-block: 12px;
+  text-decoration: none;
+}
+.site-footer-signature .brand-lockup {
+  --brand-cut: var(--ink);
+  --brand-accent: var(--coral);
+  gap: clamp(8px, 1.5vw, 24px);
+  color: var(--paper);
+}
+.site-footer-signature .brand-symbol {
+  width: clamp(58px, 15vw, 220px);
+  height: clamp(58px, 15vw, 220px);
+  color: var(--paper);
+}
+.site-footer-signature .brand-wordmark {
+  font-size: clamp(48px, 18vw, 270px);
+  font-weight: 700;
+  letter-spacing: -.075em;
+  line-height: 1;
+}
+.site-footer-signature-link:focus-visible {
+  outline-color: var(--coral);
+  outline-offset: 8px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .modern-home[data-motion-ready] .site-footer-signature-link {
+    transform: translate3d(0, 22%, 0);
+    transition: transform 600ms var(--ease-out);
+  }
+  .modern-home[data-motion-ready] .site-footer-signature[data-brand-visible] .site-footer-signature-link {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 .auth-page-v2,
 .message-page-v2 { min-height: 100vh; background: var(--paper); }
 .auth-page-v2 .auth-main-v2 {

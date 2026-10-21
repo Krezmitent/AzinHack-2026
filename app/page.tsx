@@ -3,6 +3,7 @@ import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import LandingBrief from "@/components/LandingBrief";
+import LandingMotion from "@/components/LandingMotion";
 import { verifiedReviews } from "@/lib/reviews";
 import "./landing-redesign.css";
 
@@ -20,6 +21,7 @@ const features = [
 export default function HomePage() {
   return (
     <div className="marketing-shell modern-home">
+      <LandingMotion />
       <SiteHeader />
       <main>
         <section className="modern-hero" aria-labelledby="landing-heading">

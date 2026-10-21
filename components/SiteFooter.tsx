@@ -20,6 +20,13 @@ export default function SiteFooter() {
         </nav>
       </div>
       <div className="page-wrap site-footer-bottom"><span>© {new Date().getFullYear()} AutoGrant</span><span>You review every draft before an application run.</span></div>
+      <div className="site-footer-signature">
+        <div className="page-wrap">
+          <Link className="site-footer-signature-link" href="/" aria-label="AutoGrant home">
+            <BrandLogo />
+          </Link>
+        </div>
+      </div>
     </footer>
   );
 }
