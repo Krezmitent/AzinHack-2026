@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title description">
+  <title id="title">AutoGrant workflow</title>
+  <desc id="description">A four-step flow: define a startup profile, discover public funding opportunities, review fit and source evidence, then inspect application questions and prepare an editable draft.</desc>
+  <rect width="1200" height="520" rx="32" fill="#f5f1ed"/>
+  <rect x="38" y="36" width="1124" height="72" rx="20" fill="#fffdfa" stroke="#e4ddd6"/>
+  <path d="M78 73h26M91 60v26" stroke="#f06443" stroke-width="8" stroke-linecap="round"/>
+  <text x="126" y="78" fill="#201e1c" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700">autogrant</text>
+  <text x="1080" y="78" fill="#6e6761" font-family="Arial, Helvetica, sans-serif" font-size="16" text-anchor="end">A clearer route from discovery to application</text>
+  <path d="M278 268H360M555 268H637M832 268H914" stroke="#cfc6bf" stroke-width="8" stroke-linecap="round"/>
+  <path d="M346 254l18 14-18 14M623 254l18 14-18 14M900 254l18 14-18 14" fill="none" stroke="#cfc6bf" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <g>
+    <rect x="54" y="168" width="224" height="204" rx="24" fill="#fffdfa" stroke="#e4ddd6" stroke-width="2"/>
+    <rect x="76" y="190" width="48" height="48" rx="14" fill="#ff724d"/>
+    <text x="100" y="222" fill="#fffdfa" font-family="Arial, Helvetica, sans-serif" font-size="27" text-anchor="middle">1</text>
+    <text x="76" y="278" fill="#201e1c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">Define</text>
+    <text x="76" y="310" fill="#625c57" font-family="Arial, Helvetica, sans-serif" font-size="17">Start with sector, location,</text>
+    <text x="76" y="334" fill="#625c57" font-family="Arial, Helvetica, sans-serif" font-size="17">stage, and funding needs.</text>
+  </g>
+  <g>
+    <rect x="331" y="168" width="224" height="204" rx="24" fill="#fffdfa" stroke="#e4ddd6" stroke-width="2"/>
+    <rect x="353" y="190" width="48" height="48" rx="14" fill="#f5bb54"/>
+    <text x="377" y="222" fill="#201e1c" font-family="Arial, Helvetica, sans-serif" font-size="27" text-anchor="middle">2</text>
+    <text x="353" y="278" fill="#201e1c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">Discover</text>
+    <text x="353" y="310" fill="#625c57" font-family="Arial, Helvetica, sans-serif" font-size="17">Find public programme pages</text>
+    <text x="353" y="334" fill="#625c57" font-family="Arial, Helvetica, sans-serif" font-size="17">and keep the original sources.</text>
+  </g>
+  <g>
+    <rect x="608" y="168" width="224" height="204" rx="24" fill="#fffdfa" stroke="#e4ddd6" stroke-width="2"/>
+    <rect x="630" y="190" width="48" height="48" rx="14" fill="#62a8df"/>
+    <text x="654" y="222" fill="#fffdfa" font-family="Arial, Helvetica, sans-serif" font-size="27" text-anchor="middle">3</text>
+    <text x="630" y="278" fill="#201e1c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">Understand</text>
+    <text x="630" y="310" fill="#625c57" font-family="Arial, Helvetica, sans-serif" font-size="17">Review fit notes, eligibility</text>
+    <text x="630" y="334" fill="#625c57" font-family="Arial, Helvetica, sans-serif" font-size="17">details, and source evidence.</text>
+  </g>
+  <g>
+    <rect x="885" y="168" width="261" height="204" rx="24" fill="#201e1c"/>
+    <rect x="907" y="190" width="48" height="48" rx="14" fill="#b484d6"/>
+    <text x="931" y="222" fill="#fffdfa" font-family="Arial, Helvetica, sans-serif" font-size="27" text-anchor="middle">4</text>
+    <text x="907" y="278" fill="#fffdfa" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">Prepare</text>
+    <text x="907" y="310" fill="#ddd6d0" font-family="Arial, Helvetica, sans-serif" font-size="17">Inspect real questions and edit</text>
+    <text x="907" y="334" fill="#ddd6d0" font-family="Arial, Helvetica, sans-serif" font-size="17">every draft before proceeding.</text>
+  </g>
+  <text x="600" y="453" fill="#625c57" font-family="Arial, Helvetica, sans-serif" font-size="19" text-anchor="middle">The founder reviews the evidence, controls the draft, and explicitly starts any application run.</text>
+</svg>
